@@ -7,7 +7,20 @@ MVP functionality is considered in:
 - game start and conducting with scores supplementing due to the host filtering the players answers
 
 ## Use cases diagram
-<img alt="use-cases" src="/assets/usecase-diagram.png">
+```mermaid
+flowchart LR
+A[User]-->B[Authorize/2FA]
+B-->C([Social networks])
+B-->D([login/password])
+C-->C1(Github)
+C-->C2(Google)
+A-->E([Create game template])
+A-->F([Create game lobby])
+F-->F1([Share game link invite])
+F1-->F2(Start game)
+A-->G([Join game via invite link])
+A-->H([Search lobbies])
+```
 
 ##Technologies for implementing:
 - Frontend: Angular
