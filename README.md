@@ -22,7 +22,7 @@ A-->G([Join game via invite link])
 A-->H([Search lobbies])
 ```
 
-##Technologies for implementing:
+## Technologies for implementing:
 - Frontend: Angular
 - Database: postgresql, redis
 - Backend: fastify, µwebsocket
