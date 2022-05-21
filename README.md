@@ -9,23 +9,31 @@ MVP functionality is considered in:
 ## Use cases diagram
 ```mermaid
 flowchart LR
-A[User]-->B[Authorize/2FA]
-B-->C([Social networks])
-B-->D([login/password])
-C-->C1(Github)
-C-->C2(Google)
-A-->E([Create game template])
-A-->F([Create game lobby])
-F-->F1([Share game link invite])
-F1-->F2(Start game)
-A-->G([Join game via invite link])
-A-->H([Search lobbies])
+    A[User]-->B[Authorize/2FA]
+    B-->C([Social networks])
+    B-->D([login/password])
+    C-->C1(Github)
+    C-->C2(Google)
+    A-->E([Create game template])
+    A-->F([Create game lobby])
+    F-->F1([Share game link invite])
+    F1-->F2(Start game)
+    A-->G([Join game via invite link])
+    A-->H([Search lobbies])
+```
+
+```mermaid
+flowchart LR
+    A[Host] -->|Receive answer| B(Check answer)
+    B -->|Right| C[Give points to the player]
+    B -->|Wrong| D[Take player's points]
+    A --> E[Choose question]
 ```
 
 ## Technologies for implementing:
 - Frontend: Angular
-- Database: postgresql, redis
-- Backend: fastify, µwebsocket
+- Database: postgresql
+- Backend: µwebsocket
 - Testing: Jest/Jasmine
 - ESLint, Prettier
 
