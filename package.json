@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend/issues"
   },
-  "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme"
+  "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
+  "dependencies": {
+    "fastify-websocket": "^4.3.0"
+  }
 }
