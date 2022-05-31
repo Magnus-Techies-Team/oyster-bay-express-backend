@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
+    "start": "node ./dist/src/index.js",
     "build:dev": "tsc --watch",
-    "start": "node ./dist/index.js"
+    "start:dev": "env-cmd -f env/dev.env node ./dist/index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://DanilLevadsky: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@github.com/Magnus-Techies-Team/oyster-bay-express-backend.git"
+    "url": "git+https://github.com/Magnus-Techies-Team/oyster-bay-express-backend.git"
   },
   "author": "",
   "license": "ISC",
@@ -19,6 +20,15 @@
   },
   "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
   "dependencies": {
-    "fastify-websocket": "^4.3.0"
+    "@fastify/websocket": "^5.0.0",
+    "@types/pg": "^8.6.5",
+    "@types/ws": "^8.5.3",
+    "env-cmd": "^10.1.0",
+    "fastify": "^3.29.0",
+    "fastify-websocket": "^4.3.0",
+    "pg": "^8.7.3"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.36"
   }
 }
