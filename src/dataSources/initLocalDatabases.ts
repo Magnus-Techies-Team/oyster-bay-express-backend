@@ -1,6 +1,6 @@
 import DBHelper from "./DBHelper";
 import { 
-  createDatabase, 
+  installExtencion, 
   createUsers,
   createGoogleAuth, 
   createGithubAuth, 
@@ -13,8 +13,8 @@ import {
 import { postgresConfig } from "./pgConfig";
 
 export async function initLocalDatabasesIfNotExists(): Promise<any> {
-  console.log(postgresConfig);
   const queryToExecute = `
+    ${installExtencion}
     ${createUsers}
     ${createGoogleAuth}
     ${createGithubAuth}
@@ -24,7 +24,6 @@ export async function initLocalDatabasesIfNotExists(): Promise<any> {
     ${createQuestionType}
     ${createQuestions}
   `;
-  console.log(queryToExecute)
   const resultFromInit = await DBHelper.executePgQuery(queryToExecute, [], postgresConfig)
   if (resultFromInit.error) {
     throw new Error(`Failed to initialize database. Error: ${resultFromInit.error}`)
