@@ -9,7 +9,7 @@ import { ReplyGenericInterface } from "fastify/types/reply";
 
 interface RequestGenericInterfaceCreateQuizz {
   Body: {
-  
+    //
   };
   Querystring?: RequestQuerystringDefault;
   Params: RequestParamsDefault;
