@@ -3,11 +3,11 @@ import {
   RequestHeadersDefault,
   RequestQuerystringDefault,
   RequestGenericInterface,
-  RequestParamsDefault
+  RequestParamsDefault,
 } from "fastify";
 import { ReplyGenericInterface } from "fastify/types/reply";
 
-interface RequestGenericInterfaceCreateQuizz {
+interface RequestGenericInterfaceCreateQuiz {
   Body: {
     //
   };
@@ -16,4 +16,6 @@ interface RequestGenericInterfaceCreateQuizz {
   Headers?: RequestHeadersDefault;
 }
 
-export interface RouteGenericInterfaceQuizz extends RequestGenericInterfaceCreateQuizz, ReplyGenericInterface {}
+export interface RouteGenericInterfaceQuiz
+  extends RequestGenericInterfaceCreateQuiz,
+    ReplyGenericInterface {}

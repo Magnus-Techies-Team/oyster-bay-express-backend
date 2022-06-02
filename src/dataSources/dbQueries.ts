@@ -1,4 +1,4 @@
-export const installExtencion = `
+export const installExtension = `
 	create extension if not exists "uuid-ossp";
 `;
 
@@ -29,7 +29,7 @@ export const createDiscordAuth = `create table if not exists discord_auth (
 	identifier text not null,
 	constraint fk_user foreign key(id) references users(id)	
 );`;
-export const createQuizz = `create table if not exists quizz (
+export const createQuiz = `create table if not exists quiz (
 	id uuid default uuid_generate_v4() primary key,
 	title text not null,
 	author uuid not null,
@@ -42,7 +42,7 @@ export const createRound = `create table if not exists rounds (
 	id serial primary key,
 	quiz uuid,
 	round_number integer not null check (round_number > 0),
-	constraint fk_quizz foreign key(quiz) references quizz(id)
+	constraint fk_quiz foreign key(quiz) references quiz(id)
 );`;
 
 export const createQuestionType = `

@@ -9,6 +9,6 @@ export const routes: RouteOptions[] = [
   {
     method: "POST",
     url: "/createQuiz",
-    handler: <RouteHandlerMethod>controller.createQuizz,
+    handler: <RouteHandlerMethod>controller.createQuiz,
   },
 ];
