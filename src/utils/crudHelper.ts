@@ -1,7 +1,13 @@
-export function constructCreateQueryStringBasedOnParams(data: {
-  tableName: string;
-  columnObject: { [columnKey: string]: any };
-}): { queryString: string; valuesArray: any } {
+import {
+  createRecordType,
+  deleteRecordType,
+  readRecordType,
+  updateRecordType,
+} from "../types/crudTypes";
+
+export function constructCreateQueryStringBasedOnParams(
+  data: createRecordType
+): { queryString: string; valuesArray: any } {
   let columnNames: Array<string> = [];
   let columnValues: Array<any> = [];
   Object.keys(data.columnObject).forEach((columnKey: string) => {
@@ -19,11 +25,7 @@ export function constructCreateQueryStringBasedOnParams(data: {
   return { queryString: createRecordQueryString, valuesArray: columnValues };
 }
 
-export function constructGetQueryStringBasedOnParams(data: {
-  tableName: string;
-  searchBy?: string;
-  value?: number | string;
-}) {
+export function constructGetQueryStringBasedOnParams(data: readRecordType) {
   let getRecordQueryString = `select * from ${data.tableName}`;
   if (data.searchBy && data.value) {
     getRecordQueryString += ` WHERE ${data.searchBy} = ${data.value} `;
@@ -33,12 +35,9 @@ export function constructGetQueryStringBasedOnParams(data: {
   return getRecordQueryString;
 }
 
-export function constructUpdateQueryStringBasedOnParams(data: {
-  tableName: string;
-  columnObject: { [columnKey: string]: any };
-  searchBy: string;
-  value: number;
-}): { queryString: string; valuesArray: any } {
+export function constructUpdateQueryStringBasedOnParams(
+  data: updateRecordType
+): { queryString: string; valuesArray: any } {
   let columnValues: Array<any> = [];
   let updateRecordQueryString = `UPDATE ${data.tableName} SET `;
   let counter = 1;
@@ -59,10 +58,8 @@ export function constructUpdateQueryStringBasedOnParams(data: {
   return { queryString: updateRecordQueryString, valuesArray: columnValues };
 }
 
-export function constructDeleteQueryStringBasedOnParams(data: {
-  tableName: string;
-  searchBy: string;
-  value: number;
-}) {
+export function constructDeleteQueryStringBasedOnParams(
+  data: deleteRecordType
+) {
   return `delete from ${data.tableName} WHERE ${data.searchBy} = ${data.value} returning *`;
 }

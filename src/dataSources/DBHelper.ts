@@ -2,14 +2,14 @@ import { pgConfig } from "./utils/pgConfig";
 import pgPool from "./utils/pgPool";
 
 class DBHelper {
-  public async executePgQuery(
-    query: string,
-    values: Array<any>,
-    dbConfig: pgConfig,
-  ): Promise<any> {
-    let connection = await pgPool(dbConfig).connect();
+  public async executePgQuery(data: {
+    query: string;
+    values: Array<any>;
+    dbConfig: pgConfig;
+  }): Promise<any> {
+    let connection = await pgPool(data.dbConfig).connect();
     try {
-      const result = await connection.query(query, values);
+      const result = await connection.query(data.query, data.values);
       return result;
     } catch (error) {
       console.error(error);
