@@ -24,11 +24,11 @@ export async function initLocalDatabasesIfNotExists(): Promise<any> {
     ${createQuestionType}
     ${createQuestions}
   `;
-  const resultFromInit = await DBHelper.executePgQuery(
-    queryToExecute,
-    [],
-    postgresConfig
-  );
+  const resultFromInit = await DBHelper.executePgQuery({
+    query: queryToExecute,
+    values: [],
+    dbConfig: postgresConfig,
+  });
   if (resultFromInit.error) {
     throw new Error(
       `Failed to initialize database. Error: ${resultFromInit.error}`
