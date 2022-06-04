@@ -1,10 +1,11 @@
 
    
-import { FastifyInstance, FastifyPluginOptions, RouteOptions } from "fastify";
+import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { IncomingMessage, Server as httpServer, ServerResponse } from "http";
 import generalHook from "./utils/generalHook";
 import { plugin, pluginSet, router, routerSet } from "./serverTypes";
 import { initLocalDatabasesIfNotExists } from "../dataSources/initLocalDatabases";
+import { RouteOptions } from "@fastify/websocket";
 
 export class Server {
   private setOfRouters: routerSet;

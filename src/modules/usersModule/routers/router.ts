@@ -1,4 +1,5 @@
-import { RouteOptions, RegisterOptions, RouteHandlerMethod } from "fastify";
+import { RouteOptions } from "@fastify/websocket";
+import { RegisterOptions } from "fastify";
 import * as controller from "./controller";
 
 export const opts: RegisterOptions = {
@@ -7,8 +8,10 @@ export const opts: RegisterOptions = {
 
 export const routes: RouteOptions[] = [
   {
-    method: "POST",
-    url: "/createUser",
-    handler: <RouteHandlerMethod>controller.createUser,
+    method: "GET",
+    url: "/test",
+    handler: (req, rep) => { /**/},
+    websocket: false,
+    wsHandler: controller.createUser,
   },
 ];

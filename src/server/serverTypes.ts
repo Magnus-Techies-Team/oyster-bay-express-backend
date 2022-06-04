@@ -2,8 +2,8 @@ import {
   FastifyPluginCallback,
   FastifyPluginOptions,
   RegisterOptions,
-  RouteOptions,
 } from "fastify";
+import { RouteOptions } from "@fastify/websocket";
 
 export type routerSet = { opts: RegisterOptions; routes: RouteOptions[] }[];
 export type pluginSet = {
