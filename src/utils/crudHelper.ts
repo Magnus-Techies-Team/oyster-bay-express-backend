@@ -28,7 +28,7 @@ export function constructCreateQueryStringBasedOnParams(
 export function constructGetQueryStringBasedOnParams(data: readRecordType) {
   let getRecordQueryString = `select * from ${data.tableName}`;
   if (data.searchBy && data.value) {
-    getRecordQueryString += ` WHERE ${data.searchBy} = ${data.value} `;
+    getRecordQueryString += ` WHERE ${data.searchBy} = '${data.value}' `;
   } else if ((!data.searchBy && data.value) || (!data.value && data.searchBy)) {
     throw new Error("To make a search, searchBy and value must be defined.");
   }
@@ -53,13 +53,16 @@ export function constructUpdateQueryStringBasedOnParams(
     0,
     updateRecordQueryString.length - 2
   );
-  updateRecordQueryString += ` WHERE ${data.searchBy} = $${counter} returning *`;
+  updateRecordQueryString += ` WHERE ${counter} =`;
   columnValues.push(data.searchBy);
+  counter += 1;
+  updateRecordQueryString += ` $${counter} returning *`;
+  columnValues.push(data.value);
   return { queryString: updateRecordQueryString, valuesArray: columnValues };
 }
 
 export function constructDeleteQueryStringBasedOnParams(
   data: deleteRecordType
 ) {
-  return `delete from ${data.tableName} WHERE ${data.searchBy} = ${data.value} returning *`;
+  return `delete from ${data.tableName} WHERE ${data.searchBy} = '${data.value}' returning *`;
 }

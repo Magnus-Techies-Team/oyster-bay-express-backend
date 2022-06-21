@@ -13,7 +13,7 @@ import {
   updateRecordType,
 } from "../types/crudTypes";
 
-class ServiceClass {
+export default new (class ServiceClass {
   async createRecord(data: createRecordType) {
     let { queryString, valuesArray } =
       constructCreateQueryStringBasedOnParams(data);
@@ -51,4 +51,4 @@ class ServiceClass {
       dbConfig: postgresConfig,
     });
   }
-}
+})();
