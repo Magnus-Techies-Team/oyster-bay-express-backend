@@ -12,14 +12,10 @@ export const createQuiz = async (
   req: FastifyRequest<RouteGenericInterfaceCreateQuiz>,
   rep: FastifyReply
 ) => {
-<<<<<<< Updated upstream
   const userId = rep.getHeader("uuid");
   const quiz = { ...req.body, author: userId };
   const result = await QuizManager.recordQuiz(quiz, userId!);
   return rep.status(200).send(result);
-=======
-  //
->>>>>>> Stashed changes
 };
 
 export const createLobby = async (req: FastifyRequest, rep: FastifyReply) => {
