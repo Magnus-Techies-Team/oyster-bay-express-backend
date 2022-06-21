@@ -6,7 +6,6 @@ import {
   createGithubAuth,
   createDiscordAuth,
   createQuiz,
-  createRound,
   createQuestionType,
   createQuestions,
 } from "./dbQueries";
@@ -20,7 +19,6 @@ export async function initLocalDatabasesIfNotExists(): Promise<any> {
     ${createGithubAuth}
     ${createDiscordAuth}
     ${createQuiz}
-    ${createRound}
     ${createQuestionType}
     ${createQuestions}
   `;

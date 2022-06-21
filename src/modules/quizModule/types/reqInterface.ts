@@ -6,16 +6,15 @@ import {
   RequestParamsDefault,
 } from "fastify";
 import { ReplyGenericInterface } from "fastify/types/reply";
+import { Quiz } from "./Quiz";
 
 interface RequestGenericInterfaceCreateQuiz {
-  Body: {
-    //
-  };
+  Body: Quiz;
   Querystring?: RequestQuerystringDefault;
   Params: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
 
-export interface RouteGenericInterfaceQuiz
+export interface RouteGenericInterfaceCreateQuiz
   extends RequestGenericInterfaceCreateQuiz,
     ReplyGenericInterface {}

@@ -59,7 +59,7 @@ export class Server {
     await initLocalDatabasesIfNotExists();
   }
 
-  public async initServer(port: string, host: string) {
-    await this.serverInstace.listen(port, host);
+  public async initServer(port: number, host: string) {
+    await this.serverInstace.listen({port, host}, (err, address) => {/** */});
   }
 }

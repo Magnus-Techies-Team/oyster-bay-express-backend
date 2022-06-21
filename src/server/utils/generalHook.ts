@@ -1,4 +1,5 @@
 import { FastifyReply, FastifyRequest, RouteOptions } from "fastify";
+import { verify, sign } from "jsonwebtoken";
 import { hookHandler, hookHandlerAsync } from "./hookTypes";
 
 class GeneralHook {
@@ -17,13 +18,13 @@ class GeneralHook {
 
   public applyGeneralHook(routes: RouteOptions[]) { // use in future to validate auth
     return this.applyHook(routes, {
-      preValidation: function (
-        req: FastifyRequest,
-        rep: FastifyReply,
-        done: any
-      ) {
-        done();
-      },
+      // preValidation: function (
+      //   req: FastifyRequest,
+      //   rep: FastifyReply,
+      //   done: any
+      // ) {
+      //   done();
+      // },
     });
   }
 }

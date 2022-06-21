@@ -28,7 +28,7 @@ export function constructCreateQueryStringBasedOnParams(
 export function constructGetQueryStringBasedOnParams(data: readRecordType) {
   let getRecordQueryString = `select * from ${data.tableName}`;
   if (data.searchBy && data.value) {
-    getRecordQueryString += ` WHERE ${data.searchBy} = ${data.value} `;
+    getRecordQueryString += ` WHERE ${data.searchBy} = ${typeof data.value === "string" ? `'${data.value}'` : data.value} `;
   } else if ((!data.searchBy && data.value) || (!data.value && data.searchBy)) {
     throw new Error("To make a search, searchBy and value must be defined.");
   }

@@ -1,9 +1,42 @@
-import { SocketStream, WebsocketHandler } from "@fastify/websocket";
-import { FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { RouteGenericInterfaceCreateUser, RouteGenericInterfaceLogin } from "../types/reqInterface";
+import UserService from "../utils/UserManager";
+import { sign } from "jsonwebtoken";
 
 export const createUser = async (
-  connection: SocketStream,
-  req: FastifyRequest,
+  req: FastifyRequest<RouteGenericInterfaceCreateUser>,
+  rep: FastifyReply,
   ) => {
-  setInterval(() => connection.socket.send(`1`), 1000);
+  const user = await UserService.createUser(
+    req.body
+  );
+  if (user.error) {
+    return rep.status(400).send({ error: user.error });
+  }
+  return rep.status(200).send(user);
+};
+
+export const login = async (
+  req: FastifyRequest<RouteGenericInterfaceLogin>,
+  rep: FastifyReply,
+) => {
+  const user = await UserService.login(
+    req.body
+  );
+  if (user.error) {
+    return rep.status(400).send({ error: user.error });
+  }
+  const jwt = sign(user, <string>process.env.REFRESH_TOKEN_SECRET, { expiresIn: 21600 });
+  const acc = sign(user, <string>process.env.ACCESS_TOKEN_SECRET, { expiresIn: 300 });
+  rep.setCookie("ref", jwt, { httpOnly: true});
+  return rep.status(200).send({jwt: acc, user});
+};
+
+export const logout = async (
+  req: FastifyRequest,
+  rep: FastifyReply
+) => {
+  rep.clearCookie("ref");
+  rep.clearCookie("acc");
+  rep.status(200).send({message: "Logout"});
 };

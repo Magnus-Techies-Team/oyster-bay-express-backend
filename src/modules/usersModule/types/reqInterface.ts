@@ -18,6 +18,21 @@ interface RequestGenericInterfaceCreateUser {
   Headers?: RequestHeadersDefault;
 }
 
-export interface RouteGenericInterfaceUser
+interface RequestGenericInterfaceLogin {
+  Body: {
+    login: string;
+    password: string;
+  };
+  Querystring?: RequestQuerystringDefault;
+  Params: RequestParamsDefault;
+  Headers?: RequestHeadersDefault;
+}
+
+export interface RouteGenericInterfaceCreateUser
   extends RequestGenericInterfaceCreateUser,
     ReplyGenericInterface {}
+
+export interface RouteGenericInterfaceLogin
+  extends RequestGenericInterfaceCreateUser,
+    ReplyGenericInterface {}
+  

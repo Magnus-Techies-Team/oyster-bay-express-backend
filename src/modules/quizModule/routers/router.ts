@@ -1,4 +1,5 @@
 import { RouteOptions, RegisterOptions, RouteHandlerMethod } from "fastify";
+import { verifyJWTHook } from "../../utils/verifyJWThook";
 import * as controller from "./controller";
 
 export const opts: RegisterOptions = {
@@ -10,5 +11,6 @@ export const routes: RouteOptions[] = [
     method: "POST",
     url: "/createQuiz",
     handler: <RouteHandlerMethod>controller.createQuiz,
+    preValidation: verifyJWTHook
   },
 ];

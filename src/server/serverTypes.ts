@@ -1,4 +1,5 @@
 import {
+  FastifyPlugin,
   FastifyPluginCallback,
   FastifyPluginOptions,
   RegisterOptions,

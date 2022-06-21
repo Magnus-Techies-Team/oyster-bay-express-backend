@@ -13,7 +13,7 @@ import {
   updateRecordType,
 } from "../types/crudTypes";
 
-class ServiceClass {
+export class ServiceClass {
   async createRecord(data: createRecordType) {
     let { queryString, valuesArray } =
       constructCreateQueryStringBasedOnParams(data);
