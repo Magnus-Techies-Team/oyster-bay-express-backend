@@ -1,34 +1,29 @@
-import { verifyJWTHook } from "../../utils/verifyJWThook";
 import { RegisterOptions, RouteHandlerMethod } from "fastify";
 import { RouteOptions } from "@fastify/websocket";
 import * as controller from "./controller";
-import { joinLobby } from "../../lobbyModule/routers/lobbyController";
+import * as lobbyController from "./lobbyController";
 import { WebsocketHandler } from "@fastify/websocket";
 
 export const opts: RegisterOptions = {
-  prefix: "/quiz",
+  prefix: "/lobby",
 };
 
 export const routes: RouteOptions[] = [
   {
     method: "GET",
-    url: "/createQuiz",
-    handler: <RouteHandlerMethod>controller.createQuiz,
-    preValidation: verifyJWTHook,
-    wsHandler: <WebsocketHandler>joinLobby,
-  },
-  {
-    method: "POST",
     url: "/createLobby",
-    handler: <RouteHandlerMethod>controller.createLobby,
+    handler: () => {
+      console.log("Lobby created");
+    },
+    wsHandler: <WebsocketHandler>lobbyController.createLobby,
   },
   {
     method: "GET",
     url: "/joinLobby",
     handler: () => {
-      console.log("");
+      console.log("Client joined");
     },
-    wsHandler: <WebsocketHandler>joinLobby,
+    wsHandler: <WebsocketHandler>lobbyController.joinLobby,
   },
   {
     method: "POST",
