@@ -13,12 +13,11 @@ class DBHelper {
     values: Array<any>;
   }): Promise<any> {
     try {
-      const result = await this.connection.query(data.query, data.values);
-      return result;
+      return await this.connection.query(data.query, data.values);
     } catch (error) {
       console.error(error);
       return { error: error };
-    } 
+    }
   }
 }
 

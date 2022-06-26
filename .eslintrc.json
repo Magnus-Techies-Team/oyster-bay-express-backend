@@ -3,13 +3,17 @@
     "node": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:sonarjs/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "sonarjs"],
   "rules": {
     "no-empty": "error",
     "no-prototype-builtins": "error",
@@ -25,6 +29,8 @@
     "@typescript-eslint/no-unused-vars": "error",
     "@typescript-eslint/no-non-null-assertion": "error",
     "@typescript-eslint/no-var-requires": "error",
-    "@typescript-eslint/no-inferrable-types": "error"
+    "@typescript-eslint/no-inferrable-types": "error",
+    "sonarjs/no-nested-template-literals": "off",
+    "sonarjs/no-ignored-return": "error"
   }
 }
