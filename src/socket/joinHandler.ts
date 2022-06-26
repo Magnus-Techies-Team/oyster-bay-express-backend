@@ -12,11 +12,11 @@ export default class joinHandler {
     this.#socket.send(`New player ${newClientId} has just enrolled.`);
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.JOIN, this.#listener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.JOIN, this.#listener);
   }
 }

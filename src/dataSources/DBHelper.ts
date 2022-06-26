@@ -7,7 +7,7 @@ class DBHelper {
     values: Array<any>;
     dbConfig: pgConfig;
   }): Promise<any> {
-    let connection = await pgPool(data.dbConfig).connect();
+    const connection = await pgPool(data.dbConfig).connect();
     try {
       const result = await connection.query(data.query, data.values);
       return result;

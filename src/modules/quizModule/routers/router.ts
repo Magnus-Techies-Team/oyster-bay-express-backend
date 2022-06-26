@@ -9,9 +9,15 @@ export const opts: RegisterOptions = {
 
 export const routes: RouteOptions[] = [
   {
-    method: "GET",
+    method: "POST",
     url: "/createQuiz",
     handler: <RouteHandlerMethod>controller.createQuiz,
     preValidation: verifyJWTHook,
   },
+  {
+    method: "GET",
+    url: "/getAllAvailableQuizzes",
+    handler: <RouteHandlerMethod>controller.getQuiz,
+    preValidation: verifyJWTHook
+  }
 ];

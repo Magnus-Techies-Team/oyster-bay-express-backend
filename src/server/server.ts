@@ -2,7 +2,6 @@ import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import { IncomingMessage, Server as httpServer, ServerResponse } from "http";
 import generalHook from "./utils/generalHook";
 import { plugin, pluginSet, router, routerSet } from "./serverTypes";
-import { initLocalDatabasesIfNotExists } from "../dataSources/initLocalDatabases";
 import { RouteOptions } from "@fastify/websocket";
 import socketRegistry from "../socket/socketRegistry";
 import { WebSocket } from "ws";
@@ -11,6 +10,8 @@ import { lobbyEvent } from "../socket/types/lobbyEvent";
 import lobbyManager from "../modules/lobbyModule/utils/lobbyManager";
 import disconnectHandler from "../socket/disconnectHandler";
 import chatHandler from "../socket/chatHandler";
+import * as WS from "ws";
+import { initLocalDatabasesIfNotExists } from "../dataSources/initLocalDatabases";
 
 export class Server {
   private setOfRouters: routerSet;
@@ -29,13 +30,13 @@ export class Server {
     this.setOfPlugins = pluginSet ?? [];
     this.serverInstance = server;
   }
-  public getWebsocketServer() {
+  public getWebsocketServer(): WS.Server {
     return this.serverInstance.websocketServer;
   }
-  public registerPlugin(plugin: plugin) {
+  public registerPlugin(plugin: plugin): void {
     this.setOfPlugins.push(plugin);
   }
-  public registerRouter(router: router) {
+  public registerRouter(router: router): void {
     this.setOfRouters.push(router);
   }
   private registerPlugins() {
@@ -45,7 +46,9 @@ export class Server {
   }
   private registerRouters() {
     this.setOfRouters.forEach((router: router) => {
-      let { routes, opts } = router;
+
+      let routes = router.routes;
+      const opts = router.opts;
       routes = generalHook.applyGeneralHook(routes);
       const plugin = (
         server: FastifyInstance,
@@ -58,20 +61,20 @@ export class Server {
       this.serverInstance.register(plugin, opts);
     });
   }
-  public registerApi() {
+  public registerApi(): void {
     this.registerPlugins();
     this.registerRouters();
   }
 
-  public async initLocalDatabases() {
+  public initServer(port: number, host: string): void {
+    this.serverInstance.listen({port, host});
+  }
+
+  public async initLocalDatabases(): Promise<void> {
     await initLocalDatabasesIfNotExists();
   }
 
-  public initServer(port: number, host: string) {
-    this.serverInstance.listen({port, host}, (err, address) => {/** */});
-  }
-
-  public initFastifyWebsocketServer() {
+  public initFastifyWebsocketServer(): void {
     let counter = -1;
     this.serverInstance.websocketServer.on(
       "connection",
@@ -91,9 +94,9 @@ export class Server {
           new disconnectHandler(socket),
           new chatHandler(socket),
         ];
-        for (let handler of handlers) handler.init();
+        for (const handler of handlers) handler.init();
         socket.on("close", () => {
-          for (let handler of handlers) handler.destroy();
+          for (const handler of handlers) handler.destroy();
           socketRegistry.remove(socket);
         });
       }

@@ -13,6 +13,17 @@ class QuizManager {
     return result[1].rows;
   }
 
+  public async getAllAvailableQuizes(user: string) {
+    const query = `with q as (select * from quiz where private=false or author='${user}') 
+      select q.id, q.title, q.author, users.login as author_username, q.private, q.tags 
+      from users full join q on q.author=users.id` ;
+    const result = await DBHelper.executePgQuery({query: query, values: [], dbConfig: postgresConfig});
+    if (result.error) {
+      return  {error:result.error};
+    }
+    return result.rows;
+  }
+
   private generateQuizQueries(quiz: Quiz, author: string) {
     const questionValues = new Array<string>();
     const tags = `${quiz.tags.map(tag => `'${tag}'`)}`;

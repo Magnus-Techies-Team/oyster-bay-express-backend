@@ -8,10 +8,10 @@ import {
 export function constructCreateQueryStringBasedOnParams(
   data: createRecordType
 ): { queryString: string; valuesArray: any } {
-  let columnNames: Array<string> = [];
-  let columnValues: Array<any> = [];
+  const columnNames: Array<string> = [];
+  const columnValues: Array<any> = [];
   Object.keys(data.columnObject).forEach((columnKey: string) => {
-    let tempColumnValue: any = data.columnObject[columnKey];
+    const tempColumnValue: any = data.columnObject[columnKey];
     if (tempColumnValue != undefined) {
       columnNames.push(columnKey);
       columnValues.push(tempColumnValue);
@@ -25,7 +25,7 @@ export function constructCreateQueryStringBasedOnParams(
   return { queryString: createRecordQueryString, valuesArray: columnValues };
 }
 
-export function constructGetQueryStringBasedOnParams(data: readRecordType) {
+export function constructGetQueryStringBasedOnParams(data: readRecordType): string | never {
   let getRecordQueryString = `select * from ${data.tableName}`;
   if (data.searchBy && data.value) {
     getRecordQueryString += ` WHERE ${data.searchBy} = ${typeof data.value === "string" ? `'${data.value}'` : data.value} `;
@@ -38,11 +38,11 @@ export function constructGetQueryStringBasedOnParams(data: readRecordType) {
 export function constructUpdateQueryStringBasedOnParams(
   data: updateRecordType
 ): { queryString: string; valuesArray: any } {
-  let columnValues: Array<any> = [];
+  const columnValues: Array<any> = [];
   let updateRecordQueryString = `UPDATE ${data.tableName} SET `;
   let counter = 1;
   Object.keys(data.columnObject).forEach((columnKey: string) => {
-    let tempColumnValue: any = data.columnObject[columnKey];
+    const tempColumnValue: any = data.columnObject[columnKey];
     if (tempColumnValue !== undefined) {
       updateRecordQueryString += `${columnKey} = $${counter}, `;
       columnValues.push(tempColumnValue);
@@ -63,6 +63,6 @@ export function constructUpdateQueryStringBasedOnParams(
 
 export function constructDeleteQueryStringBasedOnParams(
   data: deleteRecordType
-) {
+): string {
   return `delete from ${data.tableName} WHERE ${data.searchBy} = '${data.value}' returning *`;
 }

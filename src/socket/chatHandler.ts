@@ -12,11 +12,11 @@ export default class chatHandler {
     this.#socket.send(`${senderId}: ${message}.`);
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.RECEIVE_MESSAGE, this.#listener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.RECEIVE_MESSAGE, this.#listener);
   }
 }

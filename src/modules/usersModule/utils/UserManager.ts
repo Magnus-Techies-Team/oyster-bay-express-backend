@@ -7,12 +7,16 @@ class UserManager {
     email: string;
   }) {
     const emailMatcher =
-      /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
+      /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
     if (emailMatcher.exec(userData.email)) {
       const userCreated = await ServiceClass.createRecord({
         tableName: "users",
         columnObject: userData,
       });
+      if (userCreated.error) {
+        return {error: userCreated.error};
+      }
+      delete userCreated.rows[0].password;
       return userCreated.rows[0];
     }
     return { error: `Invalid email pattern` };

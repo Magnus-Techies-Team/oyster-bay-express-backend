@@ -25,13 +25,13 @@ export default class disconnectHandler {
     this.#socket.close();
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.DISCONNECT, this.#disconnectListener);
     this.#socket.on(lobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
     this.#socket.on(lobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.DISCONNECT, this.#disconnectListener);
     this.#socket.off(lobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
     this.#socket.off(lobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);

@@ -9,9 +9,11 @@
     "build:dev": "tsc --watch",
     "start:dev": "env-cmd -f env/dev.env node ./dist/index.js",
     "prettier-format": "pretty-quick --staged",
+    "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "init-databases": "node ./dist/scripts/migration.js"
   },
   "repository": {
     "type": "git",
@@ -24,8 +26,8 @@
   },
   "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
   "dependencies": {
-    "@fastify/cookie": "^7.0.0",
-    "@fastify/cors": "^7.0.0",
+    "@fastify/cookie": "7.0.0",
+    "@fastify/cors": "^8.0.0",
     "@fastify/websocket": "^5.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.8",

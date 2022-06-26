@@ -12,7 +12,7 @@ export const routes: RouteOptions[] = [
   {
     method: "GET",
     url: "/createLobby",
-    handler: () => {
+    handler: (): void => {
       console.log("Lobby created");
     },
     wsHandler: <WebsocketHandler>lobbyController.createLobby,
@@ -20,7 +20,7 @@ export const routes: RouteOptions[] = [
   {
     method: "GET",
     url: "/joinLobby",
-    handler: () => {
+    handler: (): void => {
       console.log("Client joined");
     },
     wsHandler: <WebsocketHandler>lobbyController.joinLobby,

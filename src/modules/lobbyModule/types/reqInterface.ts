@@ -2,7 +2,6 @@ import {
   RequestBodyDefault,
   RequestHeadersDefault,
   RequestQuerystringDefault,
-  RequestGenericInterface,
   RequestParamsDefault,
 } from "fastify";
 import { ReplyGenericInterface } from "fastify/types/reply";
@@ -10,6 +9,16 @@ import { ReplyGenericInterface } from "fastify/types/reply";
 interface RequestGenericInterfaceCreateLobby {
   Body?: RequestBodyDefault;
   Querystring?: RequestQuerystringDefault;
+  Params: RequestParamsDefault;
+  Headers?: RequestHeadersDefault;
+}
+
+interface RequestGenericInterfaceDisconnectLobby {
+  Body?: RequestBodyDefault;
+  Querystring: {
+    clientId: string,
+    lobbyId: string
+  };
   Params: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
@@ -29,4 +38,8 @@ export interface RouteGenericInterfaceCreateLobby
 
 export interface RouteGenericInterfaceLobbyAction
   extends RequestGenericInterfaceLobbyAction,
+    ReplyGenericInterface {}
+
+export interface RouteGenericInterfaceDisconnectLobby
+  extends RequestGenericInterfaceDisconnectLobby,
     ReplyGenericInterface {}

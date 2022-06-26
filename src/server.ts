@@ -7,7 +7,7 @@ import * as lobbyModule from "./modules/lobbyModule/routers";
 import fastifyCors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 
-const server = new Server(fastify({ logger: true }));
+const server = new Server(fastify({ logger: true, exposeHeadRoutes: false }));
 
 server.registerPlugin({ pluginInstance: websocketPlugin, options: {} });
 server.registerPlugin({ pluginInstance: cookie, options: { secret: <string>process.env.COOKIE_SECRET } });
