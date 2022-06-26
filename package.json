@@ -12,7 +12,7 @@
     "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "prepare": "husky install",
+    "prepare": "husky install && chmod u+x .husky/pre-commit",
     "init-databases": "node ./dist/scripts/migration.js"
   },
   "repository": {
