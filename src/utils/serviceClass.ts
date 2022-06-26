@@ -5,7 +5,6 @@ import {
   constructUpdateQueryStringBasedOnParams,
 } from "./crudHelper";
 import DBHelper from "../dataSources/DBHelper";
-import { postgresConfig } from "../dataSources/pgConfig";
 import {
   createRecordType,
   deleteRecordType,
@@ -20,7 +19,6 @@ export default new (class ServiceClass {
     return await DBHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
-      dbConfig: postgresConfig,
     });
   }
 
@@ -29,7 +27,6 @@ export default new (class ServiceClass {
     return await DBHelper.executePgQuery({
       query: queryString,
       values: [],
-      dbConfig: postgresConfig,
     });
   }
 
@@ -39,7 +36,6 @@ export default new (class ServiceClass {
     return await DBHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
-      dbConfig: postgresConfig,
     });
   }
 
@@ -48,7 +44,6 @@ export default new (class ServiceClass {
     return await DBHelper.executePgQuery({
       query: queryString,
       values: [],
-      dbConfig: postgresConfig,
     });
   }
 })();

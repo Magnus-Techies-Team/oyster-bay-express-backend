@@ -1,12 +1,11 @@
 import DBHelper from "../../../dataSources/DBHelper";
-import { postgresConfig } from "../../../dataSources/pgConfig";
 import { Quiz } from "../types/Quiz";
 
 class QuizManager {
 
   public async recordQuiz(quiz: Quiz, author: string) {
     const query = this.generateQuizQueries(quiz, author);
-    const result = await DBHelper.executePgQuery({query: query, values: [], dbConfig: postgresConfig});
+    const result = await DBHelper.executePgQuery({query: query, values: []});
     if (result.error) {
       return { error: result.error};
     }
@@ -17,7 +16,7 @@ class QuizManager {
     const query = `with q as (select * from quiz where private=false or author='${user}') 
       select q.id, q.title, q.author, users.login as author_username, q.private, q.tags 
       from users full join q on q.author=users.id` ;
-    const result = await DBHelper.executePgQuery({query: query, values: [], dbConfig: postgresConfig});
+    const result = await DBHelper.executePgQuery({query: query, values: []});
     if (result.error) {
       return  {error:result.error};
     }
