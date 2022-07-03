@@ -1,7 +1,8 @@
-import server from "./server";
+import { server } from "./projectDependencies";
 
 (async () => {
+  await server.registerApi();
   await server.initLocalDatabases();
-  server.initServer(3000, "0.0.0.0");
+  await server.initServer(3000, "0.0.0.0");
   server.initFastifyWebsocketServer();
 })();

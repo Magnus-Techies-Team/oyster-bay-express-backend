@@ -4,7 +4,7 @@ import {
   constructGetQueryStringBasedOnParams,
   constructUpdateQueryStringBasedOnParams,
 } from "./crudHelper";
-import DBHelper from "../dataSources/DBHelper";
+import { dbHelper } from "../projectDependencies";
 import { postgresConfig } from "../dataSources/pgConfig";
 import {
   createRecordType,
@@ -13,11 +13,11 @@ import {
   updateRecordType,
 } from "../types/crudTypes";
 
-export default new (class ServiceClass {
+export default class ServiceClass {
   async createRecord(data: createRecordType) {
     let { queryString, valuesArray } =
       constructCreateQueryStringBasedOnParams(data);
-    return await DBHelper.executePgQuery({
+    return await dbHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
       dbConfig: postgresConfig,
@@ -26,7 +26,7 @@ export default new (class ServiceClass {
 
   async getRecord(data: readRecordType) {
     let queryString = constructGetQueryStringBasedOnParams(data);
-    return await DBHelper.executePgQuery({
+    return await dbHelper.executePgQuery({
       query: queryString,
       values: [],
       dbConfig: postgresConfig,
@@ -36,7 +36,7 @@ export default new (class ServiceClass {
   async updateRecord(data: updateRecordType) {
     let { queryString, valuesArray } =
       constructUpdateQueryStringBasedOnParams(data);
-    return await DBHelper.executePgQuery({
+    return await dbHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
       dbConfig: postgresConfig,
@@ -45,10 +45,10 @@ export default new (class ServiceClass {
 
   async deleteRecord(data: deleteRecordType) {
     let queryString = constructDeleteQueryStringBasedOnParams(data);
-    return await DBHelper.executePgQuery({
+    return await dbHelper.executePgQuery({
       query: queryString,
       values: [],
       dbConfig: postgresConfig,
     });
   }
-})();
+}

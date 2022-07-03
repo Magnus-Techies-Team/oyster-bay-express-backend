@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { lobbyEvent } from "./types/lobbyEvent";
-import socketRegistry from "./socketRegistry";
+import { socketRegistry } from "../projectDependencies";
 
 export default class disconnectHandler {
   readonly #socket: WebSocket;

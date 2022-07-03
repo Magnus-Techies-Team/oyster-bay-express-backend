@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 
-class SocketRegistry {
+export default class SocketRegistry {
   readonly #socketByClientId = new Map<string, WebSocket>();
   readonly #clientIdBySocket = new Map<WebSocket, string>();
 
@@ -25,5 +25,3 @@ class SocketRegistry {
     return this.#socketByClientId.get(clientId);
   }
 }
-
-export default new SocketRegistry();

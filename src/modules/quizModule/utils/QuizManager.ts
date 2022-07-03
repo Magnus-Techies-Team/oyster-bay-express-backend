@@ -1,21 +1,24 @@
-import DBHelper from "../../../dataSources/DBHelper";
+import { dbHelper } from "../../../projectDependencies";
 import { postgresConfig } from "../../../dataSources/pgConfig";
 import { Quiz } from "../types/Quiz";
 
-class QuizManager {
-
+export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string) {
     const query = this.generateQuizQueries(quiz, author);
-    const result = await DBHelper.executePgQuery({query: query, values: [], dbConfig: postgresConfig});
+    const result = await dbHelper.executePgQuery({
+      query: query,
+      values: [],
+      dbConfig: postgresConfig,
+    });
     if (result.error) {
-      return { error: result.error};
+      return { error: result.error };
     }
     return result[1].rows;
   }
 
   private generateQuizQueries(quiz: Quiz, author: string) {
     const questionValues = new Array<string>();
-    const tags = `${quiz.tags.map(tag => `'${tag}'`)}`;
+    const tags = `${quiz.tags.map((tag) => `'${tag}'`)}`;
     let query = `
     create or replace function createQuiz() returns setof questions language plpgsql as
      $$
@@ -33,9 +36,7 @@ class QuizManager {
       questionValues.push(`('${question.question}', quizId, ${question.round},
        '${question.answer}', ${question.cost}, '${question.topic}', '${question.type}')`);
     });
-    query = query.replace('REPLACEMENT', questionValues.join(","));
+    query = query.replace("REPLACEMENT", questionValues.join(","));
     return query;
   }
 }
-
-export default new QuizManager();

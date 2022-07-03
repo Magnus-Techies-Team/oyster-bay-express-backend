@@ -1,22 +1,31 @@
-import { Lobby } from "../types/lobby";
 import {
+  ANSWER_QUESTION_TIMEOUT,
   disconnectLobbyStatus,
   joinLobbyStatus,
+  lobbyStatus,
   MAX_PLAYER_COUNT,
+  MIN_PLAYER_COUNT,
+  QUESTION_CANCEL_TIMEOUT,
+  startLobbyStatus,
 } from "../types/lobbyConstants";
 import { EventEmitter } from "events";
+import { Lobby } from "../types/lobby";
 import { lobbyEvent } from "../../../socket/types/lobbyEvent";
+import TimeoutTimer from "../../../utils/TimeoutTimer";
 
 export type clientEventHandler = (clientId: string) => void;
 
-export default new (class lobbyManager {
+export default class LobbyManager {
   #event = new EventEmitter();
+  #playersToAnswer = new TimeoutTimer(ANSWER_QUESTION_TIMEOUT);
+  #questionsToCancel = new TimeoutTimer(QUESTION_CANCEL_TIMEOUT);
   readonly #lobbies = new Map<string, Lobby>();
 
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
     const users = [{ id: lobby.hostId }, ...lobby.users];
     // this.#event.emit(event, lobby.hostId, ...args);
     for (let user of users) {
+      console.log(user);
       this.#event.emit(event, user.id, ...args);
     }
   }
@@ -33,13 +42,13 @@ export default new (class lobbyManager {
       users: [],
       quizId: quizId,
       maxPlayers: MAX_PLAYER_COUNT,
+      state: lobbyStatus.WAITING,
     });
     return this.#lobbies.get(lobbyId);
   }
 
   joinLobby(clientId: string, lobbyId: string) {
     // TODO: check, if user is valid via UUID
-    console.log(this.#lobbies);
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
@@ -57,9 +66,8 @@ export default new (class lobbyManager {
     // for (let user of lobby.users) {
     //     this.#event.emit(lobbyEvent.JOIN, user.id, clientId);
     // }
-    this.#emitEventForLobby(lobby, lobbyEvent.JOIN, clientId);
     lobby.users.push({ id: clientId, points: 0 });
-    return lobby;
+    this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
   }
 
   disconnectLobby(lobbyId: string, clientId: string) {
@@ -105,8 +113,28 @@ export default new (class lobbyManager {
     );
   }
 
-  onJoin(handler: (clientId: string, newClientId: string) => void) {
-    this.#event.on(lobbyEvent.JOIN, handler);
+  public startLobby(lobbyId: string, clientId: string) {
+    const lobby = this.#lobbies.get(lobbyId);
+    if (!lobby) {
+      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
+    }
+    if (lobby.hostId !== clientId) {
+      return { error: startLobbyStatus.NOT_HOST } as any;
+    }
+    if (lobby.users.length < MIN_PLAYER_COUNT) {
+      return { error: startLobbyStatus.NOT_ENOUGH_PLAYERS } as any;
+    }
+    lobby.state = lobbyStatus.STARTED;
+    this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
+    return lobby;
+  }
+
+  public takeQuestion() {
+    //
+  }
+
+  onJoin(handler: (clientId: string, lobby: Lobby) => void) {
+    this.#event.on(lobbyEvent.USER_JOIN, handler);
   }
 
   onDisconnect(handler: clientEventHandler) {
@@ -128,4 +156,8 @@ export default new (class lobbyManager {
   ) {
     this.#event.on(lobbyEvent.RECEIVE_MESSAGE, handler);
   }
-})();
+
+  onStart(handler: clientEventHandler) {
+    this.#event.on(lobbyEvent.START, handler);
+  }
+}

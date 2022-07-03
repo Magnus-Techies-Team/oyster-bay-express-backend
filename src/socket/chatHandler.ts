@@ -9,7 +9,7 @@ export default class chatHandler {
   }
 
   readonly #listener = async (senderId: string, message: string) => {
-    this.#socket.send(`${senderId}: ${message}.`);
+    this.#socket.send(`${senderId}: ${message}`); // TODO: send message object
   };
 
   init() {

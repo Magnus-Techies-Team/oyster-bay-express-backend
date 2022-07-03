@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import { lobbyEvent } from "./types/lobbyEvent";
+import { Lobby } from "../modules/lobbyModule/types/lobby";
 
 export default class joinHandler {
   readonly #socket: WebSocket;
@@ -8,15 +9,15 @@ export default class joinHandler {
     this.#socket = socket;
   }
 
-  readonly #listener = async (newClientId: string) => {
-    this.#socket.send(`New player ${newClientId} has just enrolled.`);
+  readonly #listener = async (lobby: Lobby) => {
+    this.#socket.send(JSON.stringify({ response: { lobby: lobby } }));
   };
 
   init() {
-    this.#socket.on(lobbyEvent.JOIN, this.#listener);
+    this.#socket.on(lobbyEvent.USER_JOIN, this.#listener);
   }
 
   destroy() {
-    this.#socket.off(lobbyEvent.JOIN, this.#listener);
+    this.#socket.off(lobbyEvent.USER_JOIN, this.#listener);
   }
 }

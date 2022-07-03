@@ -1,18 +1,19 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { WebSocket } from "ws";
 import { IncomingMessage, Server as httpServer, ServerResponse } from "http";
 import generalHook from "./utils/generalHook";
 import { plugin, pluginSet, router, routerSet } from "./serverTypes";
 import { initLocalDatabasesIfNotExists } from "../dataSources/initLocalDatabases";
 import { RouteOptions } from "@fastify/websocket";
-import socketRegistry from "../socket/socketRegistry";
-import { WebSocket } from "ws";
+import { socketRegistry, lobbyManager } from "../projectDependencies";
 import joinHandler from "../socket/joinHandler";
-import { lobbyEvent } from "../socket/types/lobbyEvent";
-import lobbyManager from "../modules/lobbyModule/utils/lobbyManager";
 import disconnectHandler from "../socket/disconnectHandler";
 import chatHandler from "../socket/chatHandler";
+import startHandler from "../socket/startHandler";
+import lobbyConnectionHandler from "../socket/lobbyConnectionHandler";
+import { lobbyEvent } from "../socket/types/lobbyEvent";
 
-export class Server {
+export default class Server {
   private setOfRouters: routerSet;
   private setOfPlugins: pluginSet;
   private serverInstance: FastifyInstance<
@@ -67,29 +68,35 @@ export class Server {
     await initLocalDatabasesIfNotExists();
   }
 
-  public initServer(port: number, host: string) {
-    this.serverInstance.listen({port, host}, (err, address) => {/** */});
+  public async initServer(port: number, host: string) {
+    await this.serverInstance.listen({ port, host });
   }
 
   public initFastifyWebsocketServer() {
-    let counter = -1;
     this.serverInstance.websocketServer.on(
       "connection",
       (socket: WebSocket) => {
-        counter++;
         console.log("Connected");
-        // const clientId = uuid();
-        const clientIds = [
-          "cf38d00f-35e0-4032-88cf-9b45980d9e3d",
-          "1ecc3dc4-2c44-4534-9034-ed5cc026c8b2",
-          "4101e92e-0382-4acf-a162-80cddda92a58",
-          "cc95d2b0-82fb-45f8-88a2-2da7796e696c",
-        ];
-        socketRegistry.add(socket, clientIds[counter]);
+        socket.on("message", (message) => {
+          try {
+            let msg = JSON.parse(message.toString());
+            if (msg.request) {
+              console.log(msg.request.method);
+              socket.emit(msg.request.method, msg.request.body);
+            } else if (msg.response) {
+              console.log("WE ARE HERE");
+              socket.send(msg);
+            }
+          } catch (e: any) {
+            console.log(e.message);
+          }
+        });
         const handlers = [
-          new joinHandler(socket),
           new disconnectHandler(socket),
           new chatHandler(socket),
+          new joinHandler(socket),
+          new startHandler(socket),
+          new lobbyConnectionHandler(socket),
         ];
         for (let handler of handlers) handler.init();
         socket.on("close", () => {
@@ -106,8 +113,9 @@ export class Server {
     ) => {
       const socket = socketRegistry.getSocket(clientId);
       if (socket) {
-        console.log("Socket found!");
-        console.log(`Send ${clientId} ${eventName} with args ${args}`);
+        console.log(
+          JSON.stringify(`Send ${clientId} ${eventName} with args ${args}`)
+        );
         socket.emit(eventName, ...args);
         return true;
       } else {
@@ -115,8 +123,8 @@ export class Server {
       }
     };
 
-    lobbyManager.onJoin((clientId, newClientId) => {
-      sendEvent(clientId, lobbyEvent.JOIN, newClientId);
+    lobbyManager.onJoin((clientId, lobby) => {
+      sendEvent(clientId, lobbyEvent.USER_JOIN, lobby);
     });
 
     lobbyManager.onDisconnect((clientId) => {
@@ -133,6 +141,10 @@ export class Server {
 
     lobbyManager.onChat((clientId, senderId, message) => {
       sendEvent(clientId, lobbyEvent.RECEIVE_MESSAGE, senderId, message);
+    });
+
+    lobbyManager.onStart((clientId) => {
+      sendEvent(clientId, lobbyEvent.START);
     });
   }
 }

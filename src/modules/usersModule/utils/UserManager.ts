@@ -1,6 +1,6 @@
-import ServiceClass from "../../../utils/serviceClass";
+import { serviceClass } from "../../../projectDependencies";
 
-class UserManager {
+export default class UserManager {
   public async createUser(userData: {
     login: string;
     password: string;
@@ -9,7 +9,7 @@ class UserManager {
     const emailMatcher =
       /^[-!#$%&'*+\/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+\/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
     if (emailMatcher.exec(userData.email)) {
-      const userCreated = await ServiceClass.createRecord({
+      const userCreated = await serviceClass.createRecord({
         tableName: "users",
         columnObject: userData,
       });
@@ -19,7 +19,7 @@ class UserManager {
   }
 
   public async login(userData: { login: string; password: string }) {
-    const user = await ServiceClass.getRecord({
+    const user = await serviceClass.getRecord({
       tableName: "users",
       searchBy: "login",
       value: userData.login,
@@ -35,5 +35,3 @@ class UserManager {
     }
   }
 }
-
-export default new UserManager();

@@ -1,7 +1,7 @@
 import { RegisterOptions, RouteHandlerMethod } from "fastify";
 import { RouteOptions } from "@fastify/websocket";
 import * as controller from "./controller";
-import * as lobbyController from "./lobbyController";
+import * as socketController from "./lobbyController";
 import { WebsocketHandler } from "@fastify/websocket";
 
 export const opts: RegisterOptions = {
@@ -15,7 +15,7 @@ export const routes: RouteOptions[] = [
     handler: () => {
       console.log("Lobby created");
     },
-    wsHandler: <WebsocketHandler>lobbyController.createLobby,
+    wsHandler: <WebsocketHandler>socketController.setConnection,
   },
   {
     method: "GET",
@@ -23,11 +23,16 @@ export const routes: RouteOptions[] = [
     handler: () => {
       console.log("Client joined");
     },
-    wsHandler: <WebsocketHandler>lobbyController.joinLobby,
+    wsHandler: <WebsocketHandler>socketController.joinLobby,
   },
   {
     method: "POST",
     url: "/disconnectLobby",
     handler: <RouteHandlerMethod>controller.disconnectLobby,
+  },
+  {
+    method: "POST",
+    url: "/startLobby",
+    handler: controller.startLobby,
   },
 ];

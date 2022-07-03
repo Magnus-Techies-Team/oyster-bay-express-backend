@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "tsc",
-    "start": "node ./dist/src/index.js",
+    "start": "node ./dist/index.js",
     "build:dev": "tsc --watch",
     "start:dev": "env-cmd -f env/dev.env node ./dist/index.js",
     "prettier-format": "pretty-quick --staged",
@@ -25,7 +25,7 @@
   "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
   "dependencies": {
     "@fastify/cookie": "^7.0.0",
-    "@fastify/cors": "^7.0.0",
+    "@fastify/cors": "^8.0.0",
     "@fastify/websocket": "^5.0.0",
     "@types/bcrypt": "^5.0.0",
     "@types/jsonwebtoken": "^8.5.8",
@@ -33,7 +33,6 @@
     "@types/ws": "^8.5.3",
     "bcrypt": "^5.0.1",
     "env-cmd": "^10.1.0",
-    "fastify-websocket": "^4.3.0",
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "uuidv4": "^6.2.13"
@@ -45,8 +44,7 @@
     "eslint": "^8.16.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-jest": "^26.4.6",
-    "fastify": "^4.0.0",
-    "fastify-websocket": "^4.3.0",
+    "fastify": "^4.1.0",
     "husky": "^8.0.1",
     "prettier": "^2.6.2",
     "pretty-quick": "^3.1.3"

@@ -1,7 +1,7 @@
 import { pgConfig } from "./utils/pgConfig";
 import pgPool from "./utils/pgPool";
 
-class DBHelper {
+export default class DBHelper {
   public async executePgQuery(data: {
     query: string;
     values: Array<any>;
@@ -26,4 +26,4 @@ class DBHelper {
   }
 }
 
-export default new DBHelper();
+// export default new DBHelper();

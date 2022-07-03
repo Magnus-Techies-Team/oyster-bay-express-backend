@@ -1,4 +1,4 @@
-import DBHelper from "./DBHelper";
+import { dbHelper } from "../projectDependencies";
 import {
   installExtension,
   createUsers,
@@ -22,7 +22,7 @@ export async function initLocalDatabasesIfNotExists(): Promise<any> {
     ${createQuestionType}
     ${createQuestions}
   `;
-  const resultFromInit = await DBHelper.executePgQuery({
+  const resultFromInit = await dbHelper.executePgQuery({
     query: queryToExecute,
     values: [],
     dbConfig: postgresConfig,
