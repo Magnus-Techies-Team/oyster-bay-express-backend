@@ -9,7 +9,7 @@ tput sgr0;
 npm run lint
 
 tput setaf 2;
-echo "[Husky]: run prettier-format"
+echo "[Husky]: run prettier-check"
 tput sgr0;
 
 npm run prettier-format

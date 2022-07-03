@@ -8,11 +8,11 @@ export class RestError extends Error {
   constructor(error: CustomError, message: string) {
     super();
     (this.statusCode = error.statusCode),
-      (this.error = error.errorMessage),
-      (this.message = message);
+    (this.error = error.errorMessage),
+    (this.message = message);
   }
 
-  get json() {
+  get json(): {[key:string]:any} {
     return {
       statusCode: this.statusCode,
       error: this.error,
@@ -20,7 +20,7 @@ export class RestError extends Error {
     };
   }
 
-  get string() {
+  get string(): string {
     return JSON.stringify({
       statusCode: this.statusCode,
       error: this.error,

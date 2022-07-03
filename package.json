@@ -9,9 +9,11 @@
     "build:dev": "tsc --watch",
     "start:dev": "env-cmd -f env/dev.env node ./dist/index.js",
     "prettier-format": "pretty-quick --staged",
+    "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "prepare": "husky install"
+    "prepare": "husky install && chmod u+x .husky/pre-commit",
+    "init-databases": "node ./dist/scripts/migration.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +26,11 @@
   },
   "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
   "dependencies": {
+<<<<<<< HEAD
     "@fastify/cookie": "^7.0.0",
+=======
+    "@fastify/cookie": "7.0.0",
+>>>>>>> f51050616ef7761185b3704e5abfa7fdeb3e1ca4
     "@fastify/cors": "^8.0.0",
     "@fastify/websocket": "^5.0.0",
     "@types/bcrypt": "^5.0.0",
@@ -33,6 +39,11 @@
     "@types/ws": "^8.5.3",
     "bcrypt": "^5.0.1",
     "env-cmd": "^10.1.0",
+<<<<<<< HEAD
+=======
+    "eslint-plugin-sonarjs": "^0.13.0",
+    "fastify-websocket": "^4.3.0",
+>>>>>>> f51050616ef7761185b3704e5abfa7fdeb3e1ca4
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "uuidv4": "^6.2.13"

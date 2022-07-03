@@ -1,5 +1,4 @@
-import { FastifyReply, FastifyRequest, RouteOptions } from "fastify";
-import { verify, sign } from "jsonwebtoken";
+import { RouteOptions } from "fastify";
 import { hookHandler, hookHandlerAsync } from "./hookTypes";
 
 class GeneralHook {

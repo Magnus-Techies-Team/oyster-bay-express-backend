@@ -1,32 +1,36 @@
 {
   "env": {
     "node": true,
-    "browser": true,
-    "commonjs": true,
     "es2021": true
   },
-  "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:sonarjs/recommended"
+  ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 12,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": ["@typescript-eslint", "sonarjs"],
   "rules": {
-    "no-empty": "off",
-    "no-prototype-builtins": "warn",
-    // "indent": ["warn", 2],
+    "no-empty": "error",
+    "no-prototype-builtins": "error",
+    "indent": ["warn", 2],
     "semi": ["error", "always"],
-    "no-case-declarations": "off",
-    "prefer-const": "off",
-    "no-tabs": "off",
-    "no-useless-escape": "off",
-    "no-undef": "warn",
+    "no-case-declarations": "error",
+    "prefer-const": "error",
+    "no-tabs": "error",
+    "no-useless-escape": "error",
+    "no-undef": "error",
     "@typescript-eslint/no-explicit-any": "off",
-    "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/no-non-null-assertion": "off",
-    "@typescript-eslint/no-var-requires": "off",
-    "@typescript-eslint/no-inferrable-types": "warn"
+    "@typescript-eslint/explicit-module-boundary-types": "error",
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-non-null-assertion": "error",
+    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/no-inferrable-types": "error",
+    "sonarjs/no-nested-template-literals": "off",
+    "sonarjs/no-ignored-return": "error"
   }
 }

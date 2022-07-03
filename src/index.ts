@@ -1,8 +1,10 @@
-import { server } from "./projectDependencies";
+import { server, dbHelper } from "./projectDependencies";
+import { postgresConfig } from "./dataSources/pgConfig";
 
 (async () => {
-  await server.registerApi();
+  server.registerApi();
+  await dbHelper.init(postgresConfig);
   await server.initLocalDatabases();
-  await server.initServer(3000, "0.0.0.0");
+  server.initServer(<number><unknown>process.env.PORT, <string>process.env.HOST);
   server.initFastifyWebsocketServer();
 })();

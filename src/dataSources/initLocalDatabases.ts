@@ -9,7 +9,6 @@ import {
   createQuestionType,
   createQuestions,
 } from "./dbQueries";
-import { postgresConfig } from "./pgConfig";
 
 export async function initLocalDatabasesIfNotExists(): Promise<any> {
   const queryToExecute = `
@@ -25,7 +24,6 @@ export async function initLocalDatabasesIfNotExists(): Promise<any> {
   const resultFromInit = await dbHelper.executePgQuery({
     query: queryToExecute,
     values: [],
-    dbConfig: postgresConfig,
   });
   if (resultFromInit.error) {
     throw new Error(

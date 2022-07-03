@@ -5,7 +5,6 @@ import {
   constructUpdateQueryStringBasedOnParams,
 } from "./crudHelper";
 import { dbHelper } from "../projectDependencies";
-import { postgresConfig } from "../dataSources/pgConfig";
 import {
   createRecordType,
   deleteRecordType,
@@ -15,12 +14,11 @@ import {
 
 export default class ServiceClass {
   async createRecord(data: createRecordType) {
-    let { queryString, valuesArray } =
+    const { queryString, valuesArray } =
       constructCreateQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
-      dbConfig: postgresConfig,
     });
   }
 
@@ -29,17 +27,15 @@ export default class ServiceClass {
     return await dbHelper.executePgQuery({
       query: queryString,
       values: [],
-      dbConfig: postgresConfig,
     });
   }
 
   async updateRecord(data: updateRecordType) {
-    let { queryString, valuesArray } =
+    const { queryString, valuesArray } =
       constructUpdateQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
       query: queryString,
       values: valuesArray,
-      dbConfig: postgresConfig,
     });
   }
 
@@ -48,7 +44,6 @@ export default class ServiceClass {
     return await dbHelper.executePgQuery({
       query: queryString,
       values: [],
-      dbConfig: postgresConfig,
     });
   }
 }

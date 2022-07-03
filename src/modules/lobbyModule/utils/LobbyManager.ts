@@ -24,15 +24,14 @@ export default class LobbyManager {
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
     const users = [{ id: lobby.hostId }, ...lobby.users];
     // this.#event.emit(event, lobby.hostId, ...args);
-    for (let user of users) {
-      console.log(user);
+    for (const user of users) {
       this.#event.emit(event, user.id, ...args);
     }
   }
 
   createLobby(quizId: string, hostId: string) {
     // const lobbyId = uuid();
-    for (let lobby of this.#lobbies.values())
+    for (const lobby of this.#lobbies.values())
       if (lobby.hostId === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
     const lobbyId = "41d524a8-d2ef-4677-9dc9-0e5d949ff048";
@@ -76,7 +75,7 @@ export default class LobbyManager {
       return { error: disconnectLobbyStatus.GAME_NOT_FOUND };
     }
     if (clientId === lobby.hostId) {
-      for (let user of lobby.users) {
+      for (const user of lobby.users) {
         this.#event.emit(lobbyEvent.HOST_DISCONNECT, user.id);
       }
       this.#event.emit(lobbyEvent.DISCONNECT, clientId);
@@ -86,7 +85,7 @@ export default class LobbyManager {
       lobby.users = lobby.users.filter((user) => user.id !== clientId);
       this.#event.emit(lobbyEvent.DISCONNECT, clientId);
       this.#event.emit(lobbyEvent.USER_DISCONNECT, lobby.hostId, clientId);
-      for (let user of lobby.users) {
+      for (const user of lobby.users) {
         this.#event.emit(lobbyEvent.USER_DISCONNECT, user.id, clientId);
       }
       return lobby;
@@ -106,7 +105,7 @@ export default class LobbyManager {
     //     this.#event.emit(lobbyEvent.RECEIVE_MESSAGE, user.id, senderId, message);
     // }
     this.#emitEventForLobby(
-      lobby!,
+      <Lobby>lobby,
       lobbyEvent.RECEIVE_MESSAGE,
       senderId,
       message

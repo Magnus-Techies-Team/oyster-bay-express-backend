@@ -1,8 +1,6 @@
 import {
-  RequestBodyDefault,
   RequestHeadersDefault,
   RequestQuerystringDefault,
-  RequestGenericInterface,
   RequestParamsDefault,
 } from "fastify";
 import { ReplyGenericInterface } from "fastify/types/reply";
@@ -33,6 +31,6 @@ export interface RouteGenericInterfaceCreateUser
     ReplyGenericInterface {}
 
 export interface RouteGenericInterfaceLogin
-  extends RequestGenericInterfaceCreateUser,
+  extends RequestGenericInterfaceLogin,
     ReplyGenericInterface {}
   
