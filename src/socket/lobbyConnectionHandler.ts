@@ -26,12 +26,12 @@ export default class lobbyConnectionHandler {
     this.#socket.send(JSON.stringify(lobby));
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.CREATE_LOBBY, this.#createLobbyListener);
     this.#socket.on(lobbyEvent.JOIN_LOBBY, this.#joinLobbyListener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.CREATE_LOBBY, this.#createLobbyListener);
     this.#socket.off(lobbyEvent.JOIN_LOBBY, this.#joinLobbyListener);
   }

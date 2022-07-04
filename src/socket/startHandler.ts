@@ -12,11 +12,11 @@ export default class startHandler {
     this.#socket.send(`Starting lobby.`); // TODO: send lobby object
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.START, this.#listener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.START, this.#listener);
   }
 }

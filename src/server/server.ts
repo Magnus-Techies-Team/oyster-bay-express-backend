@@ -46,7 +46,6 @@ export default class Server {
   }
   private registerRouters() {
     this.setOfRouters.forEach((router: router) => {
-
       let routes = router.routes;
       const opts = router.opts;
       routes = generalHook.applyGeneralHook(routes);
@@ -81,7 +80,7 @@ export default class Server {
         console.log("Connected");
         socket.on("message", (message) => {
           try {
-            let msg = JSON.parse(message.toString());
+            const msg = JSON.parse(message.toString());
             if (msg.request) {
               console.log(msg.request.method);
               socket.emit(msg.request.method, msg.request.body);

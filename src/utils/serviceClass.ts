@@ -13,7 +13,7 @@ import {
 } from "../types/crudTypes";
 
 export default class ServiceClass {
-  async createRecord(data: createRecordType) {
+  async createRecord(data: createRecordType): Promise<any> {
     const { queryString, valuesArray } =
       constructCreateQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
@@ -22,15 +22,15 @@ export default class ServiceClass {
     });
   }
 
-  async getRecord(data: readRecordType) {
-    let queryString = constructGetQueryStringBasedOnParams(data);
+  async getRecord(data: readRecordType): Promise<any> {
+    const queryString = constructGetQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
       query: queryString,
       values: [],
     });
   }
 
-  async updateRecord(data: updateRecordType) {
+  async updateRecord(data: updateRecordType): Promise<any> {
     const { queryString, valuesArray } =
       constructUpdateQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
@@ -39,8 +39,8 @@ export default class ServiceClass {
     });
   }
 
-  async deleteRecord(data: deleteRecordType) {
-    let queryString = constructDeleteQueryStringBasedOnParams(data);
+  async deleteRecord(data: deleteRecordType): Promise<any> {
+    const queryString = constructDeleteQueryStringBasedOnParams(data);
     return await dbHelper.executePgQuery({
       query: queryString,
       values: [],

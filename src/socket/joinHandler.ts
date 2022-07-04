@@ -13,11 +13,11 @@ export default class joinHandler {
     this.#socket.send(JSON.stringify({ response: { lobby: lobby } }));
   };
 
-  init() {
+  init(): void {
     this.#socket.on(lobbyEvent.USER_JOIN, this.#listener);
   }
 
-  destroy() {
+  destroy(): void {
     this.#socket.off(lobbyEvent.USER_JOIN, this.#listener);
   }
 }

@@ -29,7 +29,7 @@ export default class LobbyManager {
     }
   }
 
-  createLobby(quizId: string, hostId: string) {
+  createLobby(quizId: string, hostId: string): string | any {
     // const lobbyId = uuid();
     for (const lobby of this.#lobbies.values())
       if (lobby.hostId === hostId)
@@ -46,7 +46,7 @@ export default class LobbyManager {
     return this.#lobbies.get(lobbyId);
   }
 
-  joinLobby(clientId: string, lobbyId: string) {
+  joinLobby(clientId: string, lobbyId: string): string | any {
     // TODO: check, if user is valid via UUID
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
@@ -69,7 +69,7 @@ export default class LobbyManager {
     this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
   }
 
-  disconnectLobby(lobbyId: string, clientId: string) {
+  disconnectLobby(lobbyId: string, clientId: string): void | any {
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
       return { error: disconnectLobbyStatus.GAME_NOT_FOUND };
@@ -98,7 +98,7 @@ export default class LobbyManager {
     senderId: string,
     message: string,
     lobbyId: string
-  ) {
+  ): void {
     const lobby = this.#lobbies.get(lobbyId);
     // this.#event.emit(lobbyEvent.RECEIVE_MESSAGE, lobby!.hostId, senderId, message);
     // for (let user of lobby!.users) {
@@ -112,7 +112,7 @@ export default class LobbyManager {
     );
   }
 
-  public startLobby(lobbyId: string, clientId: string) {
+  public startLobby(lobbyId: string, clientId: string): Lobby | any {
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
@@ -128,35 +128,35 @@ export default class LobbyManager {
     return lobby;
   }
 
-  public takeQuestion() {
-    //
-  }
+  // public takeQuestion() {
+  //   //
+  // }
 
-  onJoin(handler: (clientId: string, lobby: Lobby) => void) {
+  onJoin(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.USER_JOIN, handler);
   }
 
-  onDisconnect(handler: clientEventHandler) {
+  onDisconnect(handler: clientEventHandler): void {
     this.#event.on(lobbyEvent.DISCONNECT, handler);
   }
 
   onUserDisconnect(
     handler: (clientId: string, deletedClientId: string) => void
-  ) {
+  ): void {
     this.#event.on(lobbyEvent.USER_DISCONNECT, handler);
   }
 
-  onHostDisconnect(handler: clientEventHandler) {
+  onHostDisconnect(handler: clientEventHandler): void {
     this.#event.on(lobbyEvent.HOST_DISCONNECT, handler);
   }
 
   onChat(
     handler: (clientId: string, senderId: string, message: string) => void
-  ) {
+  ): void {
     this.#event.on(lobbyEvent.RECEIVE_MESSAGE, handler);
   }
 
-  onStart(handler: clientEventHandler) {
+  onStart(handler: clientEventHandler): void {
     this.#event.on(lobbyEvent.START, handler);
   }
 }

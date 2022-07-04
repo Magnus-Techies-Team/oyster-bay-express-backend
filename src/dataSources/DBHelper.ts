@@ -4,7 +4,7 @@ import pgPool from "./utils/pgPool";
 
 export default class DBHelper {
   private connection: PoolClient;
-  public async init(dbConfig: pgConfig) {
+  public async init(dbConfig: pgConfig): Promise<void> {
     this.connection = await pgPool(dbConfig).connect();
   }
 

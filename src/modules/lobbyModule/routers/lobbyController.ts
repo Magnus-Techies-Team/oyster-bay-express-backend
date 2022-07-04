@@ -7,7 +7,7 @@ import { lobbyEvent } from "../../../socket/types/lobbyEvent";
 export const setConnection = (
   connection: SocketStream,
   request: FastifyRequest
-) => {
+): void => {
   // let counter = 0;
   // const clientIds = [
   //   "cf38d00f-35e0-4032-88cf-9b45980d9e3d",
@@ -35,7 +35,11 @@ export const joinLobby = (
   } else {
     connection.socket.send(JSON.stringify(lobby));
     connection.socket.on(lobbyEvent.SEND_MESSAGE, (message) => {
-      lobbyManager.sendMessageToLobby(clientId!, message.toString(), lobby.id);
+      lobbyManager.sendMessageToLobby(
+        <string>clientId,
+        message.toString(),
+        lobby.id
+      );
     });
     connection.socket.on("close", () =>
       console.log(`${clientId} disconnected`)
@@ -54,7 +58,11 @@ export const createLobby = (connection: SocketStream): void => {
   } else {
     connection.socket.send(JSON.stringify(lobby));
     connection.socket.on(lobbyEvent.SEND_MESSAGE, (message) => {
-      lobbyManager.sendMessageToLobby(<string>clientId, message.toString(), lobby.id);
+      lobbyManager.sendMessageToLobby(
+        <string>clientId,
+        message.toString(),
+        lobby.id
+      );
     });
   }
   connection.socket.on("close", () => console.log("Client disconnected"));

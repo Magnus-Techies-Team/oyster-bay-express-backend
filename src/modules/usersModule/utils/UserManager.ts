@@ -5,7 +5,7 @@ export default class UserManager {
     login: string;
     password: string;
     email: string;
-  }) {
+  }): Promise<any> {
     const emailMatcher =
       /^[-!#$%&'*+/0-9=?A-Z^_a-z{|}~](\.?[-!#$%&'*+/0-9=?A-Z^_a-z`{|}~])*@[a-zA-Z0-9](-*\.?[a-zA-Z0-9])*\.[a-zA-Z](-?[a-zA-Z0-9])+$/;
     if (emailMatcher.exec(userData.email)) {
@@ -14,7 +14,7 @@ export default class UserManager {
         columnObject: userData,
       });
       if (userCreated.error) {
-        return {error: userCreated.error};
+        return { error: userCreated.error } as any;
       }
       delete userCreated.rows[0].password;
       return userCreated.rows[0];
@@ -22,7 +22,10 @@ export default class UserManager {
     return { error: `Invalid email pattern` };
   }
 
-  public async login(userData: { login: string; password: string }) {
+  public async login(userData: {
+    login: string;
+    password: string;
+  }): Promise<any> {
     const user = await serviceClass.getRecord({
       tableName: "users",
       searchBy: "login",

@@ -1,5 +1,3 @@
-import fastify from "fastify";
-import Server from "./server/server";
 import { server } from "./projectDependencies";
 import websocketPlugin from "@fastify/websocket";
 import * as usersModule from "./modules/usersModule/routers";

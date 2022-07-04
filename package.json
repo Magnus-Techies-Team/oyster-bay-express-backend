@@ -26,11 +26,7 @@
   },
   "homepage": "https://github.com/Magnus-Techies-Team/oyster-bay-express-backend#readme",
   "dependencies": {
-<<<<<<< HEAD
-    "@fastify/cookie": "^7.0.0",
-=======
     "@fastify/cookie": "7.0.0",
->>>>>>> f51050616ef7761185b3704e5abfa7fdeb3e1ca4
     "@fastify/cors": "^8.0.0",
     "@fastify/websocket": "^5.0.0",
     "@types/bcrypt": "^5.0.0",
@@ -39,11 +35,8 @@
     "@types/ws": "^8.5.3",
     "bcrypt": "^5.0.1",
     "env-cmd": "^10.1.0",
-<<<<<<< HEAD
-=======
     "eslint-plugin-sonarjs": "^0.13.0",
     "fastify-websocket": "^4.3.0",
->>>>>>> f51050616ef7761185b3704e5abfa7fdeb3e1ca4
     "jsonwebtoken": "^8.5.1",
     "pg": "^8.7.3",
     "uuidv4": "^6.2.13"
