@@ -5,6 +5,9 @@ import { postgresConfig } from "./dataSources/pgConfig";
   server.registerApi();
   await dbHelper.init(postgresConfig);
   await server.initLocalDatabases();
-  server.initServer(<number><unknown>process.env.PORT, <string>process.env.HOST);
+  await server.initServer(
+    <number>(<unknown>process.env.PORT),
+    <string>process.env.HOST
+  );
   server.initFastifyWebsocketServer();
 })();

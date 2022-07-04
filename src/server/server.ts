@@ -65,8 +65,8 @@ export default class Server {
     this.registerRouters();
   }
 
-  public initServer(port: number, host: string): void {
-    this.serverInstance.listen({ port, host });
+  public async initServer(port: number, host: string): Promise<void> {
+    await this.serverInstance.listen({ port, host });
   }
 
   public async initLocalDatabases(): Promise<void> {
