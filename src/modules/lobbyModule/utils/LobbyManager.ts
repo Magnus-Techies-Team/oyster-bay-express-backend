@@ -47,8 +47,8 @@ export default class LobbyManager {
   }
 
   joinLobby(clientId: string, lobbyId: string): string | any {
-    // TODO: check, if user is valid via UUID
     const lobby = this.#lobbies.get(lobbyId);
+    console.log(lobby);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
@@ -61,12 +61,9 @@ export default class LobbyManager {
     if (lobby.users.length === lobby.maxPlayers) {
       return { error: joinLobbyStatus.LOBBY_IS_FULL } as any;
     }
-    // this.#event.emit(lobbyEvent.JOIN, lobby.hostId, clientId);
-    // for (let user of lobby.users) {
-    //     this.#event.emit(lobbyEvent.JOIN, user.id, clientId);
-    // }
     lobby.users.push({ id: clientId, points: 0 });
     this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
+    return lobby;
   }
 
   disconnectLobby(lobbyId: string, clientId: string): void | any {
@@ -94,6 +91,22 @@ export default class LobbyManager {
     }
   }
 
+  public startLobby(lobbyId: string, clientId: string): Lobby | any {
+    const lobby = this.#lobbies.get(lobbyId);
+    if (!lobby) {
+      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
+    }
+    if (lobby.hostId !== clientId) {
+      return { error: startLobbyStatus.NOT_HOST } as any;
+    }
+    if (lobby.users.length < MIN_PLAYER_COUNT) {
+      return { error: startLobbyStatus.NOT_ENOUGH_PLAYERS } as any;
+    }
+    lobby.state = lobbyStatus.STARTED;
+    this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
+    return lobby;
+  }
+
   public sendMessageToLobby(
     senderId: string,
     message: string,
@@ -110,22 +123,6 @@ export default class LobbyManager {
       senderId,
       message
     );
-  }
-
-  public startLobby(lobbyId: string, clientId: string): Lobby | any {
-    const lobby = this.#lobbies.get(lobbyId);
-    if (!lobby) {
-      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
-    }
-    if (lobby.hostId !== clientId) {
-      return { error: startLobbyStatus.NOT_HOST } as any;
-    }
-    if (lobby.users.length < MIN_PLAYER_COUNT) {
-      return { error: startLobbyStatus.NOT_ENOUGH_PLAYERS } as any;
-    }
-    lobby.state = lobbyStatus.STARTED;
-    this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
-    return lobby;
   }
 
   // public takeQuestion() {

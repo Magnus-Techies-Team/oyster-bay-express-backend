@@ -23,7 +23,7 @@ export default class lobbyConnectionHandler {
     const lobby = lobbyManager.joinLobby(body.clientId, body.lobbyId);
     if (lobby && lobby.error)
       this.#socket.send(JSON.stringify({ response: { error: lobby.error } }));
-    this.#socket.send(JSON.stringify(lobby));
+    else this.#socket.send(JSON.stringify({ response: { lobby: lobby } }));
   };
 
   init(): void {

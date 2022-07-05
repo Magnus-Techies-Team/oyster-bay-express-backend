@@ -85,7 +85,6 @@ export default class Server {
               console.log(msg.request.method);
               socket.emit(msg.request.method, msg.request.body);
             } else if (msg.response) {
-              console.log("WE ARE HERE");
               socket.send(msg);
             }
           } catch (e: any) {

@@ -3,7 +3,7 @@ import Server from "./server/server";
 import {
   COOKIE_SETTINGS,
   CORS_SETTINGS,
-  SERVER_OPTIONS,
+  SERVER_SETTINGS,
   WEBSOCKET_SETTINGS,
 } from "./config";
 import * as usersModule from "./modules/usersModule/routers";
@@ -19,7 +19,7 @@ import UserManager from "./modules/usersModule/utils/UserManager";
 import LobbyManager from "./modules/lobbyModule/utils/LobbyManager";
 import QuizManager from "./modules/quizModule/utils/QuizManager";
 
-const fastifyInstance = fastify(SERVER_OPTIONS);
+const fastifyInstance = fastify(SERVER_SETTINGS);
 const routers = [usersModule, quizModule, lobbyModule];
 const plugins = [
   { pluginInstance: websocketPlugin, options: WEBSOCKET_SETTINGS },

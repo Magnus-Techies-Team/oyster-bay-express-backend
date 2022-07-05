@@ -47,23 +47,23 @@ export const joinLobby = (
   }
 };
 
-export const createLobby = (connection: SocketStream): void => {
-  const quizId = "quizKek";
-  const clientId = socketRegistry.getClientId(connection.socket);
-  console.log(`hostId = ${clientId}`);
-  const lobby = lobbyManager.createLobby(quizId, <string>clientId);
-  if (lobby.error) {
-    connection.socket.send(lobby.error);
-    connection.socket.close();
-  } else {
-    connection.socket.send(JSON.stringify(lobby));
-    connection.socket.on(lobbyEvent.SEND_MESSAGE, (message) => {
-      lobbyManager.sendMessageToLobby(
-        <string>clientId,
-        message.toString(),
-        lobby.id
-      );
-    });
-  }
-  connection.socket.on("close", () => console.log("Client disconnected"));
-};
+// export const createLobby = (connection: SocketStream): void => {
+//   const quizId = "quizKek";
+//   const clientId = socketRegistry.getClientId(connection.socket);
+//   console.log(`hostId = ${clientId}`);
+//   const lobby = lobbyManager.createLobby(quizId, <string>clientId);
+//   if (lobby.error) {
+//     connection.socket.send(lobby.error);
+//     connection.socket.close();
+//   } else {
+//     connection.socket.send(JSON.stringify(lobby));
+//     connection.socket.on(lobbyEvent.SEND_MESSAGE, (message) => {
+//       lobbyManager.sendMessageToLobby(
+//         <string>clientId,
+//         message.toString(),
+//         lobby.id
+//       );
+//     });
+//   }
+//   connection.socket.on("close", () => console.log("Client disconnected"));
+// };

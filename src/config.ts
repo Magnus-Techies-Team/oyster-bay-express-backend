@@ -1,4 +1,4 @@
-export const SERVER_OPTIONS = {
+export const SERVER_SETTINGS = {
   logger: true,
   exposeHeadRoutes: false,
 };
