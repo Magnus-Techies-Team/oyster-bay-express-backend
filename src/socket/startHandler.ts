@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import { lobbyEvent } from "./types/lobbyEvent";
+import { Lobby } from "../modules/lobbyModule/types/lobby";
 
 export default class startHandler {
   readonly #socket: WebSocket;
@@ -8,8 +9,8 @@ export default class startHandler {
     this.#socket = socket;
   }
 
-  readonly #listener = async () => {
-    this.#socket.send(`Starting lobby.`); // TODO: send lobby object
+  readonly #listener = async (lobby: Lobby) => {
+    this.#socket.send(lobby);
   };
 
   init(): void {

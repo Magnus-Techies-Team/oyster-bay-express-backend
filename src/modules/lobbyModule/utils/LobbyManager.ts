@@ -23,7 +23,6 @@ export default class LobbyManager {
 
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
     const users = [{ id: lobby.hostId }, ...lobby.users];
-    // this.#event.emit(event, lobby.hostId, ...args);
     for (const user of users) {
       this.#event.emit(event, user.id, ...args);
     }
@@ -153,7 +152,7 @@ export default class LobbyManager {
     this.#event.on(lobbyEvent.RECEIVE_MESSAGE, handler);
   }
 
-  onStart(handler: clientEventHandler): void {
+  onStart(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.START, handler);
   }
 }

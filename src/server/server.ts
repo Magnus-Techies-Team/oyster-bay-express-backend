@@ -86,9 +86,11 @@ export default class Server {
               socket.emit(msg.request.method, msg.request.body);
             } else if (msg.response) {
               socket.send(msg);
-            }
+            } else
+              socket.send({ response: { error: "Wrong socket message body" } });
           } catch (e: any) {
             console.log(e.message);
+            socket.send({ response: { error: e.message } });
           }
         });
         const handlers = [
@@ -143,8 +145,8 @@ export default class Server {
       sendEvent(clientId, lobbyEvent.RECEIVE_MESSAGE, senderId, message);
     });
 
-    lobbyManager.onStart((clientId) => {
-      sendEvent(clientId, lobbyEvent.START);
+    lobbyManager.onStart((clientId, lobby) => {
+      sendEvent(clientId, lobbyEvent.START, lobby);
     });
   }
 }
