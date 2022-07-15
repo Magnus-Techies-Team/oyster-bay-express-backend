@@ -1,17 +1,17 @@
 import { FastifyInstance, FastifyPluginOptions } from "fastify";
 import * as WS from "ws";
 import { IncomingMessage, Server as httpServer, ServerResponse } from "http";
-import generalHook from "./utils/generalHook";
-import { plugin, pluginSet, router, routerSet } from "./serverTypes";
+import generalHook from "~/server/utils/generalHook";
+import { plugin, pluginSet, router, routerSet } from "~/server/serverTypes";
 import { RouteOptions } from "@fastify/websocket";
-import { socketRegistry, lobbyManager } from "../projectDependencies";
-import joinHandler from "../socket/joinHandler";
-import disconnectHandler from "../socket/disconnectHandler";
-import chatHandler from "../socket/chatHandler";
-import startHandler from "../socket/startHandler";
-import lobbyConnectionHandler from "../socket/lobbyConnectionHandler";
-import { lobbyEvent } from "../socket/types/lobbyEvent";
-import { initLocalDatabasesIfNotExists } from "../dataSources/initLocalDatabases";
+import { socketRegistry, lobbyManager } from "~/projectDependencies";
+import joinHandler from "~/socket/joinHandler";
+import disconnectHandler from "~/socket/disconnectHandler";
+import chatHandler from "~/socket/chatHandler";
+import startHandler from "~/socket/startHandler";
+import lobbyConnectionHandler from "~/socket/lobbyConnectionHandler";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { initLocalDatabasesIfNotExists } from "~/dataSources/initLocalDatabases";
 
 export default class Server {
   private setOfRouters: routerSet;

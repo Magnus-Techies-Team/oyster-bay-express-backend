@@ -2,8 +2,8 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   RouteGenericInterfaceCreateUser,
   RouteGenericInterfaceLogin,
-} from "../types/reqInterface";
-import { userManager } from "../../../projectDependencies";
+} from "~/modules/usersModule/types/reqInterface";
+import { userManager } from "~/projectDependencies";
 import { sign } from "jsonwebtoken";
 
 export const createUser = async (

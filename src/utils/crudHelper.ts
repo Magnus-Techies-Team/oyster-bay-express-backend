@@ -3,7 +3,7 @@ import {
   deleteRecordType,
   readRecordType,
   updateRecordType,
-} from "../types/crudTypes";
+} from "~/types/crudTypes";
 
 export function constructCreateQueryStringBasedOnParams(
   data: createRecordType

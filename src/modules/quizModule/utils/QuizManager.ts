@@ -1,5 +1,5 @@
-import { dbHelper } from "../../../projectDependencies";
-import { Quiz } from "../types/Quiz";
+import { dbHelper } from "~/projectDependencies";
+import { Quiz } from "~/modules/quizModule/types/Quiz";
 
 export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string): Promise<any> {

@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { RouteGenericInterfaceCreateQuiz } from "../types/reqInterface";
-import { quizManager } from "../../../projectDependencies";
+import { RouteGenericInterfaceCreateQuiz } from "~/modules/quizModule/types/reqInterface";
+import { quizManager } from "~/projectDependencies";
 
 export const createQuiz = async (
   req: FastifyRequest<RouteGenericInterfaceCreateQuiz>,

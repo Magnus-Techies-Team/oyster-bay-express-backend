@@ -1,4 +1,4 @@
-import { verifyJWTHook } from "../../utils/verifyJWThook";
+import { verifyJWTHook } from "~/modules/utils/verifyJWThook";
 import { RegisterOptions, RouteHandlerMethod } from "fastify";
 import { RouteOptions } from "@fastify/websocket";
 import * as controller from "./controller";
@@ -18,6 +18,6 @@ export const routes: RouteOptions[] = [
     method: "GET",
     url: "/getAllAvailableQuizzes",
     handler: <RouteHandlerMethod>controller.getQuiz,
-    preValidation: verifyJWTHook
-  }
+    preValidation: verifyJWTHook,
+  },
 ];

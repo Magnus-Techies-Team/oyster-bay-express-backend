@@ -1,7 +1,7 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "./types/lobbyEvent";
-import { Lobby } from "../modules/lobbyModule/types/lobby";
-import { lobbyManager, socketMessageManager } from "../projectDependencies";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { Lobby } from "~/modules/lobbyModule/types/lobby";
+import { lobbyManager, socketMessageManager } from "~/projectDependencies";
 
 export default class startHandler {
   readonly #socket: WebSocket;

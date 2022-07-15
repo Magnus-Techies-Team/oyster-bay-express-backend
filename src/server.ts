@@ -1,8 +1,8 @@
-import { server } from "./projectDependencies";
+import { server } from "~/projectDependencies";
 import websocketPlugin from "@fastify/websocket";
-import * as usersModule from "./modules/usersModule/routers";
-import * as quizModule from "./modules/quizModule/routers";
-import * as lobbyModule from "./modules/lobbyModule/routers";
+import * as usersModule from "~/modules/usersModule/routers";
+import * as quizModule from "~/modules/quizModule/routers";
+import * as lobbyModule from "~/modules/lobbyModule/routers";
 import fastifyCors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 

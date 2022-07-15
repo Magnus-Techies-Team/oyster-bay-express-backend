@@ -9,9 +9,9 @@ import {
   startLobbyStatus,
 } from "../types/lobbyConstants";
 import { EventEmitter } from "events";
-import { Lobby } from "../types/lobby";
-import { lobbyEvent } from "../../../socket/types/lobbyEvent";
-import TimeoutTimer from "../../../utils/TimeoutTimer";
+import { Lobby } from "~/modules/lobbyModule/types/lobby";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import TimeoutTimer from "~/utils/TimeoutTimer";
 
 export type clientEventHandler = (clientId: string) => void;
 

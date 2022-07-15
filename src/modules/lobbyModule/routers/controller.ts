@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { lobbyManager } from "../../../projectDependencies";
-import { RouteGenericInterfaceDisconnectLobby } from "../types/reqInterface";
+import { lobbyManager } from "~/projectDependencies";
+import { RouteGenericInterfaceDisconnectLobby } from "~/modules/lobbyModule/types/reqInterface";
 
 export const createLobby = async (
   req: FastifyRequest,

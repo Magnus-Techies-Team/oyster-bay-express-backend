@@ -1,5 +1,5 @@
-import { server, dbHelper } from "./projectDependencies";
-import { postgresConfig } from "./dataSources/pgConfig";
+import { server, dbHelper } from "~/projectDependencies";
+import { postgresConfig } from "~/dataSources/pgConfig";
 
 (async () => {
   server.registerApi();

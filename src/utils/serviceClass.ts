@@ -3,14 +3,14 @@ import {
   constructDeleteQueryStringBasedOnParams,
   constructGetQueryStringBasedOnParams,
   constructUpdateQueryStringBasedOnParams,
-} from "./crudHelper";
-import { dbHelper } from "../projectDependencies";
+} from "~/utils/crudHelper";
+import { dbHelper } from "~/projectDependencies";
 import {
   createRecordType,
   deleteRecordType,
   readRecordType,
   updateRecordType,
-} from "../types/crudTypes";
+} from "~/types/crudTypes";
 
 export default class ServiceClass {
   async createRecord(data: createRecordType): Promise<any> {

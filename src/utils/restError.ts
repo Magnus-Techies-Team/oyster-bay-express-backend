@@ -1,4 +1,4 @@
-import { CustomError } from "../types/restErrorTypes";
+import { CustomError } from "~/types/restErrorTypes";
 
 export class RestError extends Error {
   public statusCode: number;
@@ -8,11 +8,11 @@ export class RestError extends Error {
   constructor(error: CustomError, message: string) {
     super();
     (this.statusCode = error.statusCode),
-    (this.error = error.errorMessage),
-    (this.message = message);
+      (this.error = error.errorMessage),
+      (this.message = message);
   }
 
-  get json(): {[key:string]:any} {
+  get json(): { [key: string]: any } {
     return {
       statusCode: this.statusCode,
       error: this.error,

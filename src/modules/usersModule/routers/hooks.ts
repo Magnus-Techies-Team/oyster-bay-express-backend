@@ -1,9 +1,14 @@
-import { createHash } from  "node:crypto";
+import { createHash } from "node:crypto";
 import { FastifyReply, FastifyRequest } from "fastify";
-import { RouteGenericInterfaceCreateUser, RouteGenericInterfaceLogin } from "../types/reqInterface";
+import {
+  RouteGenericInterfaceCreateUser,
+  RouteGenericInterfaceLogin,
+} from "~/modules/usersModule/types/reqInterface";
 
 export const hashPassword = (
-  req: FastifyRequest<RouteGenericInterfaceCreateUser | RouteGenericInterfaceLogin>,
+  req: FastifyRequest<
+    RouteGenericInterfaceCreateUser | RouteGenericInterfaceLogin
+  >,
   rep: FastifyReply,
   done: () => void
 ): void => {

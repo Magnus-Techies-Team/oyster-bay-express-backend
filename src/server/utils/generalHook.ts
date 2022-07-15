@@ -1,5 +1,5 @@
 import { RouteOptions } from "fastify";
-import { hookHandler, hookHandlerAsync } from "./hookTypes";
+import { hookHandler, hookHandlerAsync } from "~/server/utils/hookTypes";
 
 class GeneralHook {
   private applyHook(
@@ -15,7 +15,8 @@ class GeneralHook {
     return routes;
   }
 
-  public applyGeneralHook(routes: RouteOptions[]) { // use in future to validate auth
+  public applyGeneralHook(routes: RouteOptions[]) {
+    // use in future to validate auth
     return this.applyHook(routes, {
       // preValidation: function (
       //   req: FastifyRequest,

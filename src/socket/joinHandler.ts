@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "./types/lobbyEvent";
-import { Lobby } from "../modules/lobbyModule/types/lobby";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { Lobby } from "~/modules/lobbyModule/types/lobby";
 
 export default class joinHandler {
   readonly #socket: WebSocket;

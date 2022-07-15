@@ -1,8 +1,8 @@
 import { SocketStream } from "@fastify/websocket";
 import { FastifyRequest } from "fastify";
-import { socketRegistry, lobbyManager } from "../../../projectDependencies";
-import { RouteGenericInterfaceLobbyAction } from "../types/reqInterface";
-import { lobbyEvent } from "../../../socket/types/lobbyEvent";
+import { socketRegistry, lobbyManager } from "~/projectDependencies";
+import { RouteGenericInterfaceLobbyAction } from "~/modules/lobbyModule/types/reqInterface";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
 
 export const setConnection = (
   connection: SocketStream,

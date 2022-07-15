@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "./types/lobbyEvent";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
 
 export default class chatHandler {
   readonly #socket: WebSocket;

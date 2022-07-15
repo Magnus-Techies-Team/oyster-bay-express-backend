@@ -1,4 +1,4 @@
-import { dbHelper } from "../projectDependencies";
+import { dbHelper } from "~/projectDependencies";
 import {
   installExtension,
   createUsers,

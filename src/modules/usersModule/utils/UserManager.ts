@@ -1,4 +1,4 @@
-import { serviceClass } from "../../../projectDependencies";
+import { serviceClass } from "~/projectDependencies";
 
 export default class UserManager {
   public async createUser(userData: {

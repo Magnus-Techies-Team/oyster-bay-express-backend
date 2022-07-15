@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "~/*": ["./*"]
+    },
     "target": "es2018",
     "module": "commonjs",
     "outDir": "./dist",
