@@ -7,5 +7,6 @@ export enum lobbyEvent {
   USER_DISCONNECT = "user_disconnect",
   SEND_MESSAGE = "message",
   RECEIVE_MESSAGE = "receive_message",
+  START_LOBBY = "start_lobby",
   START = "start",
 }

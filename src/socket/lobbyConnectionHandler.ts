@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { lobbyEvent } from "./types/lobbyEvent";
-import { lobbyManager } from "../projectDependencies";
+import { lobbyManager, socketMessageManager } from "../projectDependencies";
 
 export default class lobbyConnectionHandler {
   readonly #socket: WebSocket;
@@ -13,7 +13,7 @@ export default class lobbyConnectionHandler {
     hostId: string;
   }) => {
     const lobby = lobbyManager.createLobby(body.quizId, body.hostId);
-    this.#socket.send(JSON.stringify({ response: { lobby: lobby } }));
+    this.#socket.send(socketMessageManager.generateString({ lobby: lobby }));
   };
 
   readonly #joinLobbyListener = (body: {
@@ -22,8 +22,13 @@ export default class lobbyConnectionHandler {
   }) => {
     const lobby = lobbyManager.joinLobby(body.clientId, body.lobbyId);
     if (lobby && lobby.error)
-      this.#socket.send(JSON.stringify({ response: { error: lobby.error } }));
-    else this.#socket.send(JSON.stringify({ response: { lobby: lobby } }));
+      this.#socket.send(
+        JSON.stringify(
+          socketMessageManager.generateString({ error: lobby.error })
+        )
+      );
+    else
+      this.#socket.send(socketMessageManager.generateString({ lobby: lobby }));
   };
 
   init(): void {
