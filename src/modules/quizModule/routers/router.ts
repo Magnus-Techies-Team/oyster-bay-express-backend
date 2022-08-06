@@ -17,6 +17,12 @@ export const routes: RouteOptions[] = [
   {
     method: "GET",
     url: "/getAllAvailableQuizzes",
+    handler: <RouteHandlerMethod>controller.getAllQuizes,
+    preValidation: verifyJWTHook,
+  },
+  {
+    method: "GET",
+    url: "/getQuiz/:id",
     handler: <RouteHandlerMethod>controller.getQuiz,
     preValidation: verifyJWTHook,
   },

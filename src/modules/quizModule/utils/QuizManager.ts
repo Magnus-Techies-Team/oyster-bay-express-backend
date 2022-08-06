@@ -14,10 +14,22 @@ export default class QuizManager {
     return result[1].rows;
   }
 
+  public async getQuizQuestions(user: string, id: string): Promise<any> {
+    const query = `select qs.question, qs.answer, qs.cost, qs.round, qs.topic, 
+      qs.type, q.title as quiz_title, u.login as author_username 
+      from Questions qs join Quiz q on qs.quiz=q.id join Users u 
+      on q.author = u.id where q.id='${id}' and not private or q.author='${user}'`;
+    const result = await dbHelper.executePgQuery({ query: query, values: [] });
+    if (result.error) {
+      return { error: result.error };
+    }
+    return this.convertQuizToQuestions(result.rows);
+  }
+
   public async getAllAvailableQuizes(user: string): Promise<any> {
     const query = `with q as (select * from quiz where private=false or author='${user}') 
       select q.id, q.title, q.author, users.login as author_username, q.private, q.tags 
-      from users full join q on q.author=users.id`;
+      from users join q on q.author=users.id`;
     const result = await dbHelper.executePgQuery({ query: query, values: [] });
     if (result.error) {
       return { error: result.error };
@@ -47,5 +59,37 @@ export default class QuizManager {
     });
     query = query.replace("REPLACEMENT", questionValues.join(","));
     return query;
+  }
+
+  private convertQuizToQuestions(questions: { [key: string]: any }[]): {
+    [key: string]: any;
+  } {
+    const resultObj: { [key: string]: any } = {
+      author: questions[0].author_username,
+      title: questions[0].quiz_title,
+      rounds: {},
+    };
+    questions.forEach((qs) => {
+      if (!resultObj.rounds[qs.round]) {
+        resultObj.rounds[qs.round] = [
+          {
+            question: qs.question,
+            answer: qs.answer,
+            cost: qs.cost,
+            topic: qs.topic,
+            type: qs.type,
+          },
+        ];
+      } else {
+        resultObj.rounds[qs.round].push({
+          question: qs.question,
+          answer: qs.answer,
+          cost: qs.cost,
+          topic: qs.topic,
+          type: qs.type,
+        });
+      }
+    });
+    return resultObj;
   }
 }
