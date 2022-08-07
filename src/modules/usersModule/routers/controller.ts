@@ -43,3 +43,18 @@ export const logout = async (
   rep.clearCookie("acc");
   return rep.status(200).send({ message: "Logout" });
 };
+
+export const getUser = async (
+  req: FastifyRequest,
+  rep: FastifyReply
+): Promise<FastifyReply> => {
+  const uuid = req.cookies.uuid;
+  if (!uuid) {
+    return rep.status(401).send({ message: `Unauthorized` });
+  }
+  const userData = await userManager.getUser(uuid);
+  if (userData.error) {
+    return rep.status(401).send({ message: `Invalid user id` });
+  }
+  return rep.status(200).send(userData);
+};

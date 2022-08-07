@@ -1,4 +1,4 @@
-import { serviceClass } from "~/projectDependencies";
+import { dbHelper, serviceClass } from "~/projectDependencies";
 
 export default class UserManager {
   public async createUser(userData: {
@@ -14,7 +14,10 @@ export default class UserManager {
         columnObject: userData,
       });
       if (userCreated.error) {
-        return { error: userCreated.error } as any;
+        if (userCreated.error.code === "23505") {
+          return { error: `User with such email or username already exists` };
+        }
+        return { error: `Error occurred while creating user` };
       }
       delete userCreated.rows[0].password;
       return userCreated.rows[0];
@@ -40,5 +43,14 @@ export default class UserManager {
       delete data.password;
       return data;
     }
+  }
+
+  public async getUser(id: string): Promise<any> {
+    const query = `select login, email from Users where id='${id}'`;
+    const result = await dbHelper.executePgQuery({ query: query, values: [] });
+    if (result.error) {
+      return { error: result.error };
+    }
+    return result.rows[0];
   }
 }
