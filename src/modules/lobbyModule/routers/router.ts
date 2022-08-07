@@ -11,7 +11,7 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: "GET",
-    url: "/createLobby",
+    url: "/setConnection",
     handler: (): void => {
       console.log("Lobby created");
     },
