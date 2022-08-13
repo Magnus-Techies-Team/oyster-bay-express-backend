@@ -1,3 +1,4 @@
+import { ErrorConstraints } from "~/constraints/errorConstraints";
 import { dbHelper, serviceClass } from "~/projectDependencies";
 
 export default class UserManager {
@@ -15,14 +16,14 @@ export default class UserManager {
       });
       if (userCreated.error) {
         if (userCreated.error.code === "23505") {
-          return { error: `User with such email or username already exists` };
+          return { error: ErrorConstraints.EMAIL_OR_USERNAME_ALREADY_EXIST };
         }
-        return { error: `Error occurred while creating user` };
+        return { error: ErrorConstraints.CREATING_USER_ERROR };
       }
       delete userCreated.rows[0].password;
       return userCreated.rows[0];
     }
-    return { error: `Invalid email pattern` };
+    return { error: ErrorConstraints.INVALID_EMAIL };
   }
 
   public async login(userData: {
@@ -37,7 +38,7 @@ export default class UserManager {
     if (user.error) {
       return { error: user.error };
     } else if (userData.password !== user.rows[0].password) {
-      return { error: `Invalid password` };
+      return { error: ErrorConstraints.INVALID_PASSWORD };
     } else {
       const data = { ...user.rows[0] };
       delete data.password;

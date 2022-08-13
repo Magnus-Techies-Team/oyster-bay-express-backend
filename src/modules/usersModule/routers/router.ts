@@ -31,4 +31,9 @@ export const routes: RouteOptions[] = [
     handler: <RouteHandlerMethod>controller.getUser,
     preValidation: verifyJWTHook,
   },
+  {
+    method: "POST",
+    url: "/logout",
+    handler: controller.logout,
+  },
 ];
