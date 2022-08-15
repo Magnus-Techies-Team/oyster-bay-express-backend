@@ -15,7 +15,7 @@ server.registerPlugin({
 });
 server.registerPlugin({
   pluginInstance: fastifyCors,
-  options: { "allow-origin": "*" },
+  options: { origin: true, optionsSuccessStatus: 200, credentials: true },
 });
 
 server.registerRouter(usersModule);

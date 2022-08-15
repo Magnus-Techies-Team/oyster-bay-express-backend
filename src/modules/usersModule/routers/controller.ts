@@ -23,7 +23,6 @@ export const login = async (
   rep: FastifyReply
 ): Promise<FastifyReply> => {
   const user = await userManager.login(req.body);
-  console.log(user);
   if (user.error) {
     return rep.status(400).send(user.error);
   }
@@ -33,9 +32,30 @@ export const login = async (
   const acc = sign(user, <string>process.env.ACCESS_TOKEN_SECRET, {
     expiresIn: 300,
   });
-  rep.setCookie("ref", jwt, { httpOnly: true });
-  rep.setCookie("acc", acc, { httpOnly: true });
-  return rep.status(200).send({ jwt: acc, user });
+  const expDate = new Date("Fri, 31 Dec 9999 23:59:59 GMT");
+  return rep
+    .setCookie("ref", jwt, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      sameSite: "strict",
+      expires: expDate,
+    })
+    .setCookie("acc", acc, {
+      path: "/",
+      domain: "localhost",
+      httpOnly: true,
+      sameSite: "strict",
+      expires: expDate,
+    })
+    .setCookie("uuid", user.id, {
+      path: "/",
+      domain: "localhost",
+      sameSite: "strict",
+      expires: expDate,
+    })
+    .status(200)
+    .send({ jwt: acc, user });
 };
 
 export const logout = async (
