@@ -13,6 +13,7 @@ import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
 import { questionHandlerBody } from "~/socket/types/wsInterface";
+import { uuid } from "uuidv4";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -30,11 +31,10 @@ export default class LobbyManager {
   }
 
   createLobby(quizId: string, hostId: string): string | any {
-    // const lobbyId = uuid();
+    const lobbyId = uuid();
     for (const lobby of this.#lobbies.values())
       if (lobby.hostId === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
-    const lobbyId = "41d524a8-d2ef-4677-9dc9-0e5d949ff048";
     this.#lobbies.set(lobbyId, {
       id: lobbyId,
       hostId: hostId,
