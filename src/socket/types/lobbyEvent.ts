@@ -9,4 +9,5 @@ export enum lobbyEvent {
   RECEIVE_MESSAGE = "receive_message",
   START_LOBBY = "start_lobby",
   START = "start",
+  SET_QUESTION = "set_question",
 }

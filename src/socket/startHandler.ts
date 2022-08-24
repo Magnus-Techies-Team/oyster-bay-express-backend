@@ -16,6 +16,8 @@ export default class startHandler {
       this.#socket.send(
         socketMessageManager.generateString({ error: lobby.error })
       );
+    else
+      this.#socket.send(socketMessageManager.generateString({ lobby: lobby }));
   };
 
   readonly #listener = async (lobby: Lobby) => {

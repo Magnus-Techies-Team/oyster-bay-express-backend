@@ -12,6 +12,7 @@ import { EventEmitter } from "events";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
+import { questionHandlerBody } from "~/socket/types/wsInterface";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -124,8 +125,20 @@ export default class LobbyManager {
     );
   }
 
-  // public takeQuestion() {
-  //   //
+  public setQuestion(
+    body: questionHandlerBody & { questionId: string }
+  ): void | any {
+    const lobby = this.#lobbies.get(body.lobbyId);
+    if (!lobby) {
+      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
+    }
+    if (lobby.hostId !== body.clientId) {
+      return { error: startLobbyStatus.NOT_HOST } as any;
+    }
+  }
+
+  // public takeQuestion(body: questionHandlerBody): void | any {
+
   // }
 
   onJoin(handler: (clientId: string, lobby: Lobby) => void): void {
