@@ -16,14 +16,22 @@ export default class QuizManager {
 
   public async getQuizQuestions(user: string, id: string): Promise<any> {
     const query = `select qs.question, qs.answer, qs.cost, qs.round, qs.topic, 
-      qs.type, q.title as quiz_title, u.login as author_username 
+      qs.type, q.title as quiz_title, q.tags, u.login as author_username 
       from Questions qs join Quiz q on qs.quiz=q.id join Users u 
       on q.author = u.id where q.id='${id}' and not private or q.author='${user}'`;
     const result = await dbHelper.executePgQuery({ query: query, values: [] });
     if (result.error) {
       return { error: result.error };
     }
-    return this.convertQuizToQuestions(result.rows);
+    const quizQuestions = this.convertQuizToQuestions(result.rows);
+    quizQuestions.totalRounds = Object.keys(quizQuestions.rounds).length;
+    quizQuestions.topicQuestions = this.getQuizTopicQuestionsCount(
+      Object.values(quizQuestions.rounds)[0]
+    );
+    quizQuestions.roundTopics = this.getQuizRoundTopicsCount(
+      Object.values(quizQuestions.rounds)[0]
+    );
+    return quizQuestions;
   }
 
   public async getAllAvailableQuizes(user: string): Promise<any> {
@@ -67,6 +75,7 @@ export default class QuizManager {
     const resultObj: { [key: string]: any } = {
       author: questions[0].author_username,
       title: questions[0].quiz_title,
+      tags: questions[0].tags,
       rounds: {},
     };
     questions.forEach((qs) => {
@@ -91,5 +100,15 @@ export default class QuizManager {
       }
     });
     return resultObj;
+  }
+
+  private getQuizRoundTopicsCount(roundQuestions: any): number {
+    return new Set(roundQuestions.map((el: any) => el.topic)).size;
+  }
+
+  private getQuizTopicQuestionsCount(roundQuestions: any): number {
+    return roundQuestions.filter(
+      (e: any) => e.topic === roundQuestions[0].topic
+    ).length;
   }
 }
