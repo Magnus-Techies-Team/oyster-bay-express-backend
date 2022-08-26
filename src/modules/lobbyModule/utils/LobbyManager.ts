@@ -12,6 +12,8 @@ import { EventEmitter } from "events";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
+import { questionHandlerBody } from "~/socket/types/wsInterface";
+import { uuid } from "uuidv4";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -29,11 +31,10 @@ export default class LobbyManager {
   }
 
   createLobby(quizId: string, hostId: string): string | any {
-    // const lobbyId = uuid();
+    const lobbyId = uuid();
     for (const lobby of this.#lobbies.values())
       if (lobby.hostId === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
-    const lobbyId = "41d524a8-d2ef-4677-9dc9-0e5d949ff048";
     this.#lobbies.set(lobbyId, {
       id: lobbyId,
       hostId: hostId,
@@ -124,8 +125,20 @@ export default class LobbyManager {
     );
   }
 
-  // public takeQuestion() {
-  //   //
+  public setQuestion(
+    body: questionHandlerBody & { questionId: string }
+  ): void | any {
+    const lobby = this.#lobbies.get(body.lobbyId);
+    if (!lobby) {
+      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
+    }
+    if (lobby.hostId !== body.clientId) {
+      return { error: startLobbyStatus.NOT_HOST } as any;
+    }
+  }
+
+  // public takeQuestion(body: questionHandlerBody): void | any {
+
   // }
 
   onJoin(handler: (clientId: string, lobby: Lobby) => void): void {
