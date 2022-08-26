@@ -15,13 +15,13 @@ export const opts: RegisterOptions = {
 export const routes: RouteOptions[] = [
   {
     method: "POST",
-    url: "/createUser",
+    url: "/signUp",
     handler: <RouteHandlerMethod>controller.createUser,
     preValidation: <preValidationHookHandler>hashPassword,
   },
   {
     method: "POST",
-    url: "/login",
+    url: "/signIn",
     handler: <RouteHandlerMethod>controller.login,
     preValidation: <preValidationHookHandler>hashPassword,
   },
@@ -33,7 +33,7 @@ export const routes: RouteOptions[] = [
   },
   {
     method: "POST",
-    url: "/logout",
+    url: "/signOut",
     handler: controller.logout,
   },
 ];
