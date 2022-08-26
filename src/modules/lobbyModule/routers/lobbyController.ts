@@ -1,6 +1,6 @@
 import { SocketStream } from "@fastify/websocket";
 import { FastifyRequest } from "fastify";
-import { socketRegistry /*lobbyManager*/ } from "~/projectDependencies";
+import { socketRegistry /*,lobbyManager*/ } from "~/projectDependencies";
 
 export const setConnection = (
   connection: SocketStream,

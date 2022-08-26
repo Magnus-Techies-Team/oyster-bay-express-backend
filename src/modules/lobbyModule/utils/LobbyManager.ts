@@ -12,7 +12,10 @@ import { EventEmitter } from "events";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
-import { questionHandlerBody } from "~/socket/types/wsInterface";
+import {
+  chatActionHandlerBody,
+  questionHandlerBody,
+} from "~/socket/types/wsInterface";
 import { uuid } from "uuidv4";
 
 export type clientEventHandler = (clientId: string) => void;
@@ -107,21 +110,13 @@ export default class LobbyManager {
     return lobby;
   }
 
-  public sendMessageToLobby(
-    senderId: string,
-    message: string,
-    lobbyId: string
-  ): void {
-    const lobby = this.#lobbies.get(lobbyId);
-    // this.#event.emit(lobbyEvent.RECEIVE_MESSAGE, lobby!.hostId, senderId, message);
-    // for (let user of lobby!.users) {
-    //     this.#event.emit(lobbyEvent.RECEIVE_MESSAGE, user.id, senderId, message);
-    // }
+  public sendMessageToLobby(body: chatActionHandlerBody): void {
+    const lobby = this.#lobbies.get(body.lobbyId);
     this.#emitEventForLobby(
       <Lobby>lobby,
       lobbyEvent.RECEIVE_MESSAGE,
-      senderId,
-      message
+      body.clientId,
+      body.message
     );
   }
 
