@@ -12,4 +12,4 @@ tput setaf 2;
 echo "[Husky]: run prettier-check"
 tput sgr0;
 
-npm run prettier-format
+npm run prettier-check
