@@ -1,25 +1,19 @@
 import { dbHelper } from "~/projectDependencies";
 import {
   installExtension,
-  createUsers,
-  createGoogleAuth,
-  createGithubAuth,
-  createDiscordAuth,
-  createQuiz,
+  createUsersTable,
+  createQuizTable,
   createQuestionType,
-  createQuestions,
+  createQuestionsTable,
 } from "./dbQueries";
 
 export async function initLocalDatabasesIfNotExists(): Promise<any> {
   const queryToExecute = `
     ${installExtension}
-    ${createUsers}
-    ${createGoogleAuth}
-    ${createGithubAuth}
-    ${createDiscordAuth}
-    ${createQuiz}
+    ${createUsersTable}
+    ${createQuizTable}
     ${createQuestionType}
-    ${createQuestions}
+    ${createQuestionsTable}
   `;
   const resultFromInit = await dbHelper.executePgQuery({
     query: queryToExecute,

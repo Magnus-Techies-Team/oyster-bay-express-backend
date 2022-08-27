@@ -1,5 +1,10 @@
 import { dbHelper } from "~/projectDependencies";
 import { Quiz } from "~/modules/quizModule/types/Quiz";
+import {
+  getAvailableQuizes,
+  getQuizQuestions,
+  insertQuizQuestions,
+} from "~/dataSources/dbQueries";
 
 export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string): Promise<any> {
@@ -15,10 +20,7 @@ export default class QuizManager {
   }
 
   public async getQuizQuestions(user: string, id: string): Promise<any> {
-    const query = `select qs.question, qs.answer, qs.cost, qs.round, qs.topic, 
-      qs.type, q.title as quiz_title, q.tags, u.login as author_username 
-      from Questions qs join Quiz q on qs.quiz=q.id join Users u 
-      on q.author = u.id where q.id='${id}' and not private or q.author='${user}'`;
+    const query = getQuizQuestions(user, id);
     const result = await dbHelper.executePgQuery({ query: query, values: [] });
     if (result.error) {
       return { error: result.error };
@@ -35,9 +37,7 @@ export default class QuizManager {
   }
 
   public async getAllAvailableQuizes(user: string): Promise<any> {
-    const query = `with q as (select * from quiz where private=false or author='${user}') 
-      select q.id, q.title, q.author, users.login as author_username, q.private, q.tags 
-      from users join q on q.author=users.id`;
+    const query = getAvailableQuizes(user);
     const result = await dbHelper.executePgQuery({ query: query, values: [] });
     if (result.error) {
       return { error: result.error };
@@ -45,25 +45,18 @@ export default class QuizManager {
     return result.rows;
   }
 
-  private generateQuizQueries(quiz: Quiz, author: string) {
+  public generateQuizQueries(quiz: Quiz, author: string | null): string {
     const questionValues = new Array<string>();
     const tags = `${quiz.tags.map((tag) => `'${tag}'`)}`;
-    let query = `
-    create or replace function createQuiz() returns setof questions language plpgsql as
-     $$
-    declare quizId uuid;
-    begin
-    insert into quiz(title, author, private, tags) 
-    values('${quiz.title}', '${author}', ${quiz.private}, array[${tags}]) returning id into quizId;
-    insert into questions(question, quiz, round, answer, cost, topic, type) 
-    values REPLACEMENT;
-    return query select * from questions where quiz = quizId;
-    end $$;
-    select * from createQuiz();
-    `;
+    let query = insertQuizQuestions(quiz, author, tags);
     quiz.questions.forEach((question) => {
-      questionValues.push(`('${question.question}', quizId, ${question.round},
-       '${question.answer}', ${question.cost}, '${question.topic}', '${question.type}')`);
+      questionValues.push(`('${question.question.replace(
+        /'/gm,
+        "''"
+      )}', quizId, ${question.round},
+       '${question.answer.replace(/'/gm, "''")}', ${
+        question.cost
+      }, '${question.topic.replace(/'/gm, "''")}', '${question.type}')`);
     });
     query = query.replace("REPLACEMENT", questionValues.join(","));
     return query;
@@ -73,8 +66,10 @@ export default class QuizManager {
     [key: string]: any;
   } {
     const resultObj: { [key: string]: any } = {
-      author: questions[0].author_username,
+      author_username: questions[0].author_username,
+      author: questions[0].author,
       title: questions[0].quiz_title,
+      private: questions[0].private,
       tags: questions[0].tags,
       rounds: {},
     };

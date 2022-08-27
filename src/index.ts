@@ -1,10 +1,11 @@
 import { server, dbHelper } from "~/projectDependencies";
 import { postgresConfig } from "~/dataSources/pgConfig";
+import { seedDB } from "./seeding";
 
 (async () => {
   server.registerApi();
   await dbHelper.init(postgresConfig);
-  await server.initLocalDatabases();
+  await seedDB();
   await server.initServer(
     <number>(<unknown>process.env.PORT),
     <string>process.env.HOST

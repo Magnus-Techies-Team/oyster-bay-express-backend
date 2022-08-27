@@ -8,13 +8,11 @@
     "start": "link-module-alias && node ./dist/index.js",
     "build:dev": "tsc --watch",
     "start:dev": "link-module-alias && env-cmd -f env/dev.env node ./dist/index.js",
-    "jesus": "build && start:dev",
     "prettier-format": "pretty-quick --staged",
     "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "prepare": "husky install && chmod u+x .husky/pre-commit",
-    "init-databases": "node ./dist/scripts/migration.js"
+    "prepare": "husky install && chmod u+x .husky/pre-commit"
   },
   "repository": {
     "type": "git",
