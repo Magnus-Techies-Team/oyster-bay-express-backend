@@ -24,7 +24,7 @@ export const seedDB = async (): Promise<void> => {
     });
     const quiz = {
       title: title,
-      tags: tagsString.split("|"),
+      tags: tagsString.split("^"),
       private: false,
       questions: csvObj as Question[],
     };
