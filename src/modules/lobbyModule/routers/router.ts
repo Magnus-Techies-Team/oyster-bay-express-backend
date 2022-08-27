@@ -1,6 +1,7 @@
-import { RegisterOptions } from "fastify";
+import {RegisterOptions, RouteHandler} from "fastify";
 import { RouteOptions } from "@fastify/websocket";
 import * as socketController from "./lobbyController";
+import * as controller from "./controller";
 import { WebsocketHandler } from "@fastify/websocket";
 
 export const opts: RegisterOptions = {
@@ -16,4 +17,14 @@ export const routes: RouteOptions[] = [
     },
     wsHandler: <WebsocketHandler>socketController.setConnection,
   },
+  {
+    method: "GET",
+    url: "/getCurrentLobbyStatus",
+    handler: <RouteHandler>controller.getCurrentLobbyStatus,
+  },
+  {
+    method: "GET",
+    url: "/getAllAvailableLobbies",
+    handler: <RouteHandler>controller.getAllAvailableLobbies,
+  }
 ];

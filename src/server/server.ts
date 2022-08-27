@@ -5,12 +5,12 @@ import generalHook from "~/server/utils/generalHook";
 import { plugin, pluginSet, router, routerSet } from "~/server/serverTypes";
 import { RouteOptions } from "@fastify/websocket";
 import { socketRegistry, lobbyManager } from "~/projectDependencies";
+import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { initLocalDatabasesIfNotExists } from "~/dataSources/initLocalDatabases";
 import disconnectHandler from "~/socket/disconnectHandler";
 import chatHandler from "~/socket/chatHandler";
 import startHandler from "~/socket/startHandler";
 import lobbyConnectionHandler from "~/socket/lobbyConnectionHandler";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
-import { initLocalDatabasesIfNotExists } from "~/dataSources/initLocalDatabases";
 
 export default class Server {
   private setOfRouters: routerSet;

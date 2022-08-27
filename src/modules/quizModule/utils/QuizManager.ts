@@ -55,8 +55,8 @@ export default class QuizManager {
         "''"
       )}', quizId, ${question.round},
        '${question.answer.replace(/'/gm, "''")}', ${
-        question.cost
-      }, '${question.topic.replace(/'/gm, "''")}', '${question.type}')`);
+  question.cost
+}, '${question.topic.replace(/'/gm, "''")}', '${question.type}')`);
     });
     query = query.replace("REPLACEMENT", questionValues.join(","));
     return query;

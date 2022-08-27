@@ -1,3 +1,5 @@
+import {questionStatus} from "~/modules/lobbyModule/types/lobbyConstants";
+
 export type Question = {
   id: string;
   question: string;
@@ -5,4 +7,5 @@ export type Question = {
   cost: number;
   topic: string;
   type: string;
+  questionStatus: questionStatus;
 };

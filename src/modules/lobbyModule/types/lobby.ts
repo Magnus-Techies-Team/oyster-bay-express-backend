@@ -1,17 +1,16 @@
-import { User } from "./user";
 import { lobbyStatus } from "./lobbyConstants";
 import { Quiz } from "./Quiz";
 import { Question } from "./Question";
-import { Round } from "./Round";
 
 export type Lobby = {
   id: string;
-  users: User[];
+  users: Map<string, number>; // TODO: switch from User[] to Map<userId, userScore>
   hostId: string;
   quizId: string;
   maxPlayers: number;
   state: lobbyStatus; // уже запущена или нет
-  currentRound?: Round;
+  currentRound?: number;
   currentQuestion?: Question;
   quiz?: Quiz; // хранить сам квиз
+  assignee?: string,
 };

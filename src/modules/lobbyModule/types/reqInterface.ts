@@ -1,45 +1,30 @@
 import {
   RequestBodyDefault,
   RequestHeadersDefault,
-  RequestQuerystringDefault,
-  RequestParamsDefault,
+  RequestParamsDefault, RequestQuerystringDefault,
 } from "fastify";
 import { ReplyGenericInterface } from "fastify/types/reply";
 
-interface RequestGenericInterfaceCreateLobby {
+interface RequestGenericInterfaceGetAllLobbies {
   Body?: RequestBodyDefault;
   Querystring?: RequestQuerystringDefault;
-  Params: RequestParamsDefault;
+  Params?: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
 
-interface RequestGenericInterfaceDisconnectLobby {
-  Body?: RequestBodyDefault;
-  Querystring: {
-    clientId: string,
-    lobbyId: string
-  };
-  Params: RequestParamsDefault;
-  Headers?: RequestHeadersDefault;
-}
-
-interface RequestGenericInterfaceLobbyAction {
+interface RequestGenericInterfaceGetCurrentLobby {
   Body?: RequestBodyDefault;
   Querystring: {
     lobbyId: string;
   };
-  Params: RequestParamsDefault;
+  Params?: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
 
-export interface RouteGenericInterfaceCreateLobby
-  extends RequestGenericInterfaceCreateLobby,
+export interface RouteGenericInterfaceGetAllLobbies
+  extends RequestGenericInterfaceGetAllLobbies,
     ReplyGenericInterface {}
 
-export interface RouteGenericInterfaceLobbyAction
-  extends RequestGenericInterfaceLobbyAction,
-    ReplyGenericInterface {}
-
-export interface RouteGenericInterfaceDisconnectLobby
-  extends RequestGenericInterfaceDisconnectLobby,
-    ReplyGenericInterface {}
+export interface RouteGenericInterfaceGetCurrentLobby
+    extends RequestGenericInterfaceGetCurrentLobby,
+        ReplyGenericInterface {}

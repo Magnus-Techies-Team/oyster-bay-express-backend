@@ -10,4 +10,8 @@ export enum lobbyEvent {
   START_LOBBY = "start_lobby",
   START = "start",
   SET_QUESTION = "set_question",
+  TAKE_QUESTION = "take_question",
+  ANSWER_QUESTION = "answer_question",
+  SWITCH_ROUND = "switch_round",
+  END_LOBBY = "end_lobby",
 }
