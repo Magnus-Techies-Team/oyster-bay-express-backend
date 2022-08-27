@@ -73,5 +73,5 @@ export const getQuizQuestions = (user: string, id: string): string => `
   select qs.question, qs.answer, qs.cost, qs.round, qs.topic, 
   qs.type, q.title as quiz_title, q.tags, q.private, q.author, u.login as author_username 
   from Questions qs join Quiz q on qs.quiz=q.id join Users u 
-  on q.author = u.id where q.id='${id}' and not private or q.author='${user}'
+  on q.author = u.id where q.id='${id}' and (not private or q.author='${user}')
 `;
