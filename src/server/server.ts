@@ -5,7 +5,6 @@ import generalHook from "~/server/utils/generalHook";
 import { plugin, pluginSet, router, routerSet } from "~/server/serverTypes";
 import { RouteOptions } from "@fastify/websocket";
 import { socketRegistry, lobbyManager } from "~/projectDependencies";
-import joinHandler from "~/socket/joinHandler";
 import disconnectHandler from "~/socket/disconnectHandler";
 import chatHandler from "~/socket/chatHandler";
 import startHandler from "~/socket/startHandler";
@@ -96,7 +95,6 @@ export default class Server {
         const handlers = [
           new disconnectHandler(socket),
           new chatHandler(socket),
-          new joinHandler(socket),
           new startHandler(socket),
           new lobbyConnectionHandler(socket),
         ];
