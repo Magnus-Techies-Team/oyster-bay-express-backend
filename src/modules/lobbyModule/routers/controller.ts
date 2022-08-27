@@ -29,3 +29,13 @@ export const getCurrentLobbyStatus = async (
   return rep.status(200).send({lobbyStatus: lobby.state, userStatus: clientStatus});
 };
 
+export const getUserActiveLobby = async (
+  req: FastifyRequest,
+  rep: FastifyReply
+): Promise<FastifyReply> => {
+  const lobbies = lobbyManager.getLobby();
+  for (const [lobbyId, lobby] of lobbies.entries())
+    if (lobby.users.has(req.cookies.uuid)) return rep.status(200).send({activeLobbyId: lobbyId});
+  return rep.status(200).send({activeLobbyId: null});
+};
+
