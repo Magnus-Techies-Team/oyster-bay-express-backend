@@ -46,7 +46,7 @@ export default class LobbyManager {
     }
   }
 
-  getLobby(lobbyId?: string): Lobby | any {
+  getLobby(lobbyId?: string): {[key:string]:Lobby} | Lobby | any {
     let result;
     if (lobbyId) result = this.#lobbies[lobbyId];
     else result = this.#lobbies;
