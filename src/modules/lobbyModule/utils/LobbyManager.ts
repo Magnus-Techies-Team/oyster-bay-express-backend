@@ -3,20 +3,25 @@ import {
   disconnectLobbyStatus,
   gameStatus,
   joinLobbyStatus,
+  lobbyCondition,
   lobbyStatus,
   MAX_PLAYER_COUNT,
   MIN_PLAYER_COUNT,
   QUESTION_CANCEL_TIMEOUT,
   questionStatus,
   startLobbyStatus,
+  userState,
+  userStatus,
   validateStatus,
 } from "../types/lobbyConstants";
 import {EventEmitter} from "events";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {lobbyEvent} from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
-import {chatActionHandlerBody, questionHandlerBody,} from "~/socket/types/wsInterface";
+import {chatMessageHandlerBody, questionHandlerBody, validateQuestionHandlerBody,} from "~/socket/types/wsInterface";
 import {uuid} from "uuidv4";
+import {userManager} from "~/projectDependencies";
+import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -27,7 +32,7 @@ export default class LobbyManager {
   readonly #lobbies = new Map<string, Lobby>();
 
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
-    const users = [lobby.hostId , ...lobby.users.keys()];
+    const users = [lobby.host.user_id , ...lobby.users.keys()];
     for (const userId of users) {
       this.#event.emit(event, userId, ...args);
     }
@@ -41,15 +46,16 @@ export default class LobbyManager {
     else return result;
   }
 
-  createLobby(quizId: string, hostId: string): string | any {
+  async createLobby(quizId: string, hostId: string): Promise<any> {
     const lobbyId = uuid();
     for (const lobby of this.#lobbies.values())
-      if (lobby.hostId === hostId)
+      if (lobby.host.user_id === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
+    const host = await userManager.getUser(hostId);
     this.#lobbies.set(lobbyId, {
       id: lobbyId,
-      hostId: hostId,
-      users: new Map<string, number>(),
+      host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
+      users: new Map<string, ExtendedUserInfo>(),
       quizId: quizId,
       maxPlayers: MAX_PLAYER_COUNT,
       state: lobbyStatus.WAITING,
@@ -61,12 +67,12 @@ export default class LobbyManager {
     return this.#lobbies.get(lobbyId);
   }
 
-  joinLobby(clientId: string, lobbyId: string): string | any {
+  async joinLobby(clientId: string, lobbyId: string): Promise<any> {
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.hostId === clientId) {
+    if (lobby.host.user_id === clientId) {
       return { error: joinLobbyStatus.HOST_IN_GAME } as any;
     }
     if (lobby.users.has(clientId)) {
@@ -75,31 +81,34 @@ export default class LobbyManager {
     if (lobby.users.size === lobby.maxPlayers) {
       return { error: joinLobbyStatus.LOBBY_IS_FULL } as any;
     }
-    lobby.users.set(clientId, 0);
-    console.log(lobby);
+    if (lobby.state === lobbyStatus.STARTED) {
+      return { error: joinLobbyStatus.GAME_ALREADY_STARTED} as any;
+    }
+    const user = await userManager.getUser(clientId);
+    lobby.users.set(clientId, {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED});
     this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
-    return lobby;
+    // return lobby;
   }
 
-  disconnectLobby(lobbyId: string, clientId: string): void | any {
+  public disconnectLobby(lobbyId: string, clientId: string): void | any {
     const lobby = this.#lobbies.get(lobbyId);
     if (!lobby) {
       return { error: disconnectLobbyStatus.GAME_NOT_FOUND };
     }
-    if (clientId === lobby.hostId) {
+    if (clientId === lobby.host.user_id) {
       for (const userId of lobby.users.keys()) {
         this.#event.emit(lobbyEvent.HOST_DISCONNECT, userId);
       }
-      this.#event.emit(lobbyEvent.DISCONNECT, clientId);
+      this.#event.emit(lobbyEvent.DISCONNECT, lobby);
       this.#lobbies.delete(lobbyId);
       return { message: `Lobby with id ${lobbyId} deleted.` };
     } else if (lobby.users.has(clientId)) {
       lobby.users.delete(clientId);
       this.#event.emit(lobbyEvent.DISCONNECT, clientId);
-      this.#emitEventForLobby(lobby, lobbyEvent.USER_DISCONNECT, clientId);
+      this.#emitEventForLobby(lobby, lobbyEvent.USER_DISCONNECT, lobby);
       return lobby;
     } else {
-      return { error: disconnectLobbyStatus.USER_NOT_FOUND };
+      return { error: disconnectLobbyStatus.USER_NOT_FOUND } as any;
     }
   }
 
@@ -108,7 +117,7 @@ export default class LobbyManager {
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.hostId !== clientId) {
+    if (lobby.host.user_id !== clientId) {
       return { error: startLobbyStatus.NOT_HOST } as any;
     }
     if (lobby.users.size < MIN_PLAYER_COUNT) {
@@ -116,11 +125,11 @@ export default class LobbyManager {
     }
     lobby.state = lobbyStatus.STARTED;
     lobby.currentRound = 0;
+    lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
-    return lobby;
   }
 
-  public sendMessageToLobby(body: chatActionHandlerBody): void {
+  public sendMessageToLobby(body: chatMessageHandlerBody & {clientId: string}): void {
     const lobby = this.#lobbies.get(body.lobbyId);
     this.#emitEventForLobby(
       <Lobby>lobby,
@@ -131,24 +140,26 @@ export default class LobbyManager {
   }
 
   public setQuestion(
-    body: questionHandlerBody & { questionId: string }
+    body: questionHandlerBody & { clientId: string }
   ): void | any {
     const lobby = this.#lobbies.get(body.lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.hostId !== body.clientId) {
+    if (lobby.host.user_id !== body.clientId) {
       return { error: startLobbyStatus.NOT_HOST } as any;
     }
+    lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
+    // TODO: set current question
     // lobby.currentQuestion
   }
 
-  public takeQuestion(body: questionHandlerBody): void | any {
+  public takeQuestion(body: questionHandlerBody & {clientId: string}): void | any {
     const lobby = this.#lobbies.get(body.lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.hostId === body.clientId) {
+    if (lobby.host.user_id === body.clientId) {
       return { error: gameStatus.NO_HOST_QUESTION } as any;
     }
     if (lobby.currentQuestion === undefined) {
@@ -159,51 +170,49 @@ export default class LobbyManager {
     }
     lobby.currentQuestion!.questionStatus = questionStatus.ACTIVE;
     lobby.assignee = body.clientId;
-    // TODO: emit event for take question
-    return lobby;
+    lobby.condition = lobbyCondition.HOST_VALIDATES_ANSWER;
+    this.#emitEventForLobby(lobby, lobbyEvent.TAKE_QUESTION, lobby);
   }
 
-  public answerQuestion(body: questionHandlerBody & { answer: string }): any {
+  public validateAnswer(body: validateQuestionHandlerBody & { clientId: string }): any {
     const lobby = this.#lobbies.get(body.lobbyId);
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.hostId === body.clientId) {
-      return { error: gameStatus.NO_HOST_QUESTION } as any;
-    }
-    if (lobby.currentQuestion === undefined) {
-      return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
-    }
-    // TODO: emit event for answer
-  }
-
-  public validateAnswer(body: questionHandlerBody & { isRight: validateStatus }): any {
-    const lobby = this.#lobbies.get(body.lobbyId);
-    if (!lobby) {
-      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
-    }
-    if (lobby.hostId === body.clientId) {
+    if (lobby.host.user_id === body.clientId) {
       return { error: gameStatus.NO_HOST_QUESTION } as any;
     }
     if (lobby.assignee === undefined) {
       return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
     }
+    const user = lobby.users.get(lobby.assignee);
     if (body.isRight === validateStatus.CORRECT)
-      lobby.users.set(lobby.assignee, (lobby.users.get(lobby.assignee) as number - lobby.currentQuestion!.cost));
-    else
-      lobby.users.set(lobby.assignee, (lobby.users.get(lobby.assignee) as number + lobby.currentQuestion!.cost));
+      user!.points += lobby.currentQuestion!.cost;
+    else {
+      user!.points -= lobby.currentQuestion!.cost;
+      lobby.assignee = LobbyManager.#getNextAssignee(lobby.users, lobby.assignee);
+    }
+
     const actionInfo = {
       playerId: lobby.assignee,
       questionId: lobby.currentQuestion!.id,
-      playerScore: lobby.users.get(lobby.assignee),
+      playerScore: lobby.users.get(<string>lobby.assignee),
       isRight: body.isRight,
     };
     lobby.currentQuestion!.questionStatus = questionStatus.TAKEN;
+    lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.currentQuestion = undefined;
-    lobby.assignee = undefined;
-    // TODO: emit event for validation
     // TODO: check, if last question, then emit event for next round
-    return {actionInfo: actionInfo, lobby: lobby};
+    // TODO: check for end of game
+    this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
+  }
+
+  static #getNextAssignee(users: Map<any, any>, current: string) {
+    let counter;
+    const ids = Array.from(users.keys());
+    if (ids.indexOf(current) === ids.length - 1) counter = 0;
+    else counter = (ids.indexOf(current)) + 1;
+    return ids[counter];
   }
 
   onJoin(handler: (clientId: string, lobby: Lobby) => void): void {
@@ -234,23 +243,23 @@ export default class LobbyManager {
     this.#event.on(lobbyEvent.START, handler);
   }
 
-  onSetQuestion(handler: () => void):void {
+  onSetQuestion(handler: (clientId: string, lobby: Lobby) => void):void {
     this.#event.on(lobbyEvent.SET_QUESTION, handler);
   }
 
-  onTakeQuestion(handler: () => void): void {
+  onTakeQuestion(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.TAKE_QUESTION, handler);
   }
 
-  onAnswerQuestion(handler: () => void): void {
+  onAnswerQuestion(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.ANSWER_QUESTION, handler);
   }
 
-  onSwitchRound(handler: () => void): void {
+  onSwitchRound(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.SWITCH_ROUND, handler);
   }
 
-  onEndLobby(handler: () => void): void {
+  onEndLobby(handler: (clientId: string, lobby: Lobby) => void): void {
     this.#event.on(lobbyEvent.END_LOBBY, handler);
   }
 }

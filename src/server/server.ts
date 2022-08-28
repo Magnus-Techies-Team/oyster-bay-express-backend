@@ -1,16 +1,18 @@
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import {FastifyInstance, FastifyPluginOptions} from "fastify";
 import * as WS from "ws";
-import { IncomingMessage, Server as httpServer, ServerResponse } from "http";
+import {IncomingMessage, Server as httpServer, ServerResponse} from "http";
 import generalHook from "~/server/utils/generalHook";
-import { plugin, pluginSet, router, routerSet } from "~/server/serverTypes";
-import { RouteOptions } from "@fastify/websocket";
-import { socketRegistry, lobbyManager } from "~/projectDependencies";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
-import { initLocalDatabasesIfNotExists } from "~/dataSources/initLocalDatabases";
+import {plugin, pluginSet, router, routerSet} from "~/server/serverTypes";
+import {RouteOptions} from "@fastify/websocket";
+import {lobbyManager, socketRegistry} from "~/projectDependencies";
+import {lobbyEvent} from "~/socket/types/lobbyEvent";
+import {initLocalDatabasesIfNotExists} from "~/dataSources/initLocalDatabases";
 import disconnectHandler from "~/socket/disconnectHandler";
 import chatHandler from "~/socket/chatHandler";
 import startHandler from "~/socket/startHandler";
 import lobbyConnectionHandler from "~/socket/lobbyConnectionHandler";
+import {Lobby} from "~/modules/lobbyModule/types/lobby";
+import gameEventsHandler from "~/socket/gameEventsHandlers";
 
 export default class Server {
   private setOfRouters: routerSet;
@@ -97,6 +99,7 @@ export default class Server {
           new chatHandler(socket),
           new startHandler(socket),
           new lobbyConnectionHandler(socket),
+          new gameEventsHandler(socket),
         ];
         for (const handler of handlers) handler.init();
         socket.on("close", () => {
@@ -114,7 +117,7 @@ export default class Server {
       const socket = socketRegistry.getSocket(clientId);
       if (socket) {
         console.log(
-          JSON.stringify(`Send ${clientId} ${eventName} with args ${args}`)
+          JSON.stringify(`Send ${clientId} ${eventName} with args ${JSON.stringify(args)}`)
         );
         socket.emit(eventName, ...args);
         return true;
@@ -145,6 +148,28 @@ export default class Server {
 
     lobbyManager.onStart((clientId, lobby) => {
       sendEvent(clientId, lobbyEvent.START, lobby);
+    });
+
+    //
+
+    lobbyManager.onSetQuestion((clientId: string, lobby: Lobby) => {
+      sendEvent(clientId, lobbyEvent.SET_QUESTION, lobby);
+    });
+
+    lobbyManager.onTakeQuestion((clientId: string, lobby: Lobby) => {
+      sendEvent(clientId, lobbyEvent.TAKE_QUESTION, lobby);
+    });
+
+    lobbyManager.onAnswerQuestion((clientId: string, lobby: Lobby) => {
+      sendEvent(clientId, lobbyEvent.ANSWER_QUESTION, lobby);
+    });
+
+    lobbyManager.onSwitchRound((clientId: string, lobby: Lobby) => {
+      sendEvent(clientId, lobbyEvent.SWITCH_ROUND, lobby);
+    });
+
+    lobbyManager.onEndLobby((clientId: string, lobby: Lobby) => {
+      sendEvent(clientId, lobbyEvent.END_LOBBY, lobby);
     });
   }
 }

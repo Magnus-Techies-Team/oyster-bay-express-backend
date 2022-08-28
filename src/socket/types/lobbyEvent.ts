@@ -11,7 +11,11 @@ export enum lobbyEvent {
   START = "start",
   SET_QUESTION = "set_question",
   TAKE_QUESTION = "take_question",
+  USER_TAKE_QUESTION = "user_take_question",
   ANSWER_QUESTION = "answer_question",
+  USER_ANSWERED = "user_answered",
+  VALIDATE_QUESTION = "validate_question",
+  HOST_VALIDATED_ANSWER = "host_validated_answer",
   SWITCH_ROUND = "switch_round",
   END_LOBBY = "end_lobby",
 }

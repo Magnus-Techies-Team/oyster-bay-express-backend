@@ -4,6 +4,7 @@ export enum joinLobbyStatus {
   ALREADY_JOINED = "ALREADY_JOINED",
   HOST_IN_GAME = "HOST_IN_GAME",
   ALREADY_IN_GAME = "ALREADY_IN_GAME",
+  GAME_ALREADY_STARTED = "GAME_ALREADY_STARTED",
 }
 
 export enum disconnectLobbyStatus {
@@ -19,6 +20,12 @@ export enum startLobbyStatus {
 export enum lobbyStatus {
   STARTED = "started",
   WAITING = "waiting",
+}
+
+export enum lobbyCondition {
+  PLAYER_CHOOSES_QUESTION = "player_chooses_question",
+  PLAYERS_TAKE_QUESTION = "players_take_question",
+  HOST_VALIDATES_ANSWER = "host_validates_answer",
 }
 
 export enum gameStatus {
@@ -42,6 +49,11 @@ export enum userStatus {
   HOST = "host",
   PLAYER = "player",
   SPECTATOR = "spectator",
+}
+
+export enum userState {
+  CONNECTED = "connected",
+  DISCONNECTED = "disconnected",
 }
 
 export const MAX_PLAYER_COUNT = 5;
