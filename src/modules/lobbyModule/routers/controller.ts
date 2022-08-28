@@ -13,8 +13,9 @@ export const getAllAvailableLobbies = async (
   rep: FastifyReply
 ): Promise<FastifyReply> => {
   const lobbies = lobbyManager.getLobby();
-  console.log(lobbies);
-  return rep.status(200).send(lobbies);
+  return rep.status(200).send(Object.values(lobbies)
+    .map((lobby: any) => {return {id: lobby.id, host: {host_id: lobby.host.user_id,host_name: lobby.host.user_name,}, users: Object.values(lobby.users)
+      .map((user: any) => {return {user_id: user.user_id, user_name: user.user_name};})};}));
 };
 
 export const getCurrentLobbyStatus = async (
