@@ -13,6 +13,7 @@ export const getAllAvailableLobbies = async (
   rep: FastifyReply
 ): Promise<FastifyReply> => {
   const lobbies = lobbyManager.getLobby();
+  console.log(lobbies);
   return rep.status(200).send(lobbies);
 };
 

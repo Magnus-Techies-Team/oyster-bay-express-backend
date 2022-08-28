@@ -116,9 +116,9 @@ export default class Server {
     ) => {
       const socket = socketRegistry.getSocket(clientId);
       if (socket) {
-        console.log(
-          JSON.stringify(`Send ${clientId} ${eventName} with args ${JSON.stringify(args)}`)
-        );
+        // console.log(
+        //   JSON.stringify(`Send ${clientId} ${eventName} with args ${JSON.stringify(args)}`)
+        // );
         socket.emit(eventName, ...args);
         return true;
       } else {

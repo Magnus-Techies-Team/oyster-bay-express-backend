@@ -18,11 +18,16 @@ import {EventEmitter} from "events";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {lobbyEvent} from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
-import {chatMessageHandlerBody, questionHandlerBody, validateQuestionHandlerBody,} from "~/socket/types/wsInterface";
+import {
+  chatMessageHandlerBody,
+  defaultActionHandlerBody,
+  questionHandlerBody,
+  validateQuestionHandlerBody,
+} from "~/socket/types/wsInterface";
 import {uuid} from "uuidv4";
 import {quizManager, userManager} from "~/projectDependencies";
+import {Question} from "../types/Question";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
-import { Question } from "../types/Question";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -30,10 +35,12 @@ export default class LobbyManager {
   #event = new EventEmitter();
   #playersToAnswer = new TimeoutTimer(ANSWER_QUESTION_TIMEOUT);
   #questionsToCancel = new TimeoutTimer(QUESTION_CANCEL_TIMEOUT);
-  readonly #lobbies = new Map<string, Lobby>();
+  // readonly #lobbies = new Map<string, Lobby>();
+
+  readonly #lobbies: {[key:string]:Lobby} = {};
 
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
-    const users = [lobby.host.user_id , ...lobby.users.keys()];
+    const users = [lobby.host.user_id , ...Object.keys(lobby.users), ...[lobby.spectators]];
     for (const userId of users) {
       this.#event.emit(event, userId, ...args);
     }
@@ -41,7 +48,7 @@ export default class LobbyManager {
 
   getLobby(lobbyId?: string): Lobby | any {
     let result;
-    if (lobbyId) result = this.#lobbies.get(lobbyId);
+    if (lobbyId) result = this.#lobbies[lobbyId];
     else result = this.#lobbies;
     if (!result) return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     else return result;
@@ -49,63 +56,93 @@ export default class LobbyManager {
 
   async createLobby(quizId: string, hostId: string): Promise<any> {
     const lobbyId = uuid();
-    for (const lobby of this.#lobbies.values())
-      if (lobby.host.user_id === hostId)
+    for (const id in this.#lobbies)
+      if (this.#lobbies[id].host.user_id === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
     const host = await userManager.getUser(hostId);
     const quiz = await quizManager.getQuizQuestions(hostId, quizId);
-    this.#lobbies.set(lobbyId, {
+    // this.#lobbies.set(lobbyId, {
+    //   id: lobbyId,
+    //   host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
+    //   users: new Map<string, ExtendedUserInfo>(),
+    //   quizId: quizId,
+    //   maxPlayers: MAX_PLAYER_COUNT,
+    //   state: lobbyStatus.WAITING,
+    //   currentRound: undefined,
+    //   currentQuestion: undefined,
+    //   quiz: { title: quiz.title, rounds: quiz.rounds},
+    //   assignee: undefined,
+    // });
+    this.#lobbies[lobbyId] = {
       id: lobbyId,
       host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
-      users: new Map<string, ExtendedUserInfo>(),
+      users: {},
+      spectators: {},
       quizId: quizId,
       maxPlayers: MAX_PLAYER_COUNT,
       state: lobbyStatus.WAITING,
+      quiz: { title: quiz.title, rounds: quiz.rounds},
       currentRound: undefined,
       currentQuestion: undefined,
-      quiz: { title: quiz.title, rounds: quiz.rounds},
       assignee: undefined,
-    });
-    return this.#lobbies.get(lobbyId);
+    };
+    return this.#lobbies[lobbyId];
+  }
+
+  async spectateLobby(body: defaultActionHandlerBody & {clientId: string}): Promise<Lobby> {
+    const lobby = this.#lobbies[body.lobbyId];
+    if (!lobby) {
+      return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
+    }
+    if (lobby.host.user_id === body.clientId) {
+      return { error: joinLobbyStatus.HOST_IN_GAME } as any;
+    }
+    if (lobby.users[body.clientId]) {
+      return { error: joinLobbyStatus.ALREADY_JOINED } as any;
+    }
+    const user = await userManager.getUser(body.clientId);
+    lobby.spectators[body.clientId] = ({user_id: body.clientId, user_name: user.login, state: userState.CONNECTED, status: userStatus.SPECTATOR});
+    return lobby;
   }
 
   async joinLobby(clientId: string, lobbyId: string): Promise<any> {
-    const lobby = this.#lobbies.get(lobbyId);
+    const lobby = this.#lobbies[lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
     if (lobby.host.user_id === clientId) {
       return { error: joinLobbyStatus.HOST_IN_GAME } as any;
     }
-    if (lobby.users.has(clientId)) {
+    if (lobby.users[clientId]) {
       return { error: joinLobbyStatus.ALREADY_JOINED } as any;
     }
-    if (lobby.users.size === lobby.maxPlayers) {
+    if (Object.keys(lobby.users).length === lobby.maxPlayers) {
       return { error: joinLobbyStatus.LOBBY_IS_FULL } as any;
     }
     if (lobby.state === lobbyStatus.STARTED) {
       return { error: joinLobbyStatus.GAME_ALREADY_STARTED} as any;
     }
     const user = await userManager.getUser(clientId);
-    lobby.users.set(clientId, {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED});
+    lobby.users[clientId] = {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED};
     this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
     // return lobby;
   }
 
   public disconnectLobby(lobbyId: string, clientId: string): void | any {
-    const lobby = this.#lobbies.get(lobbyId);
+    const lobby = this.#lobbies[lobbyId];
     if (!lobby) {
       return { error: disconnectLobbyStatus.GAME_NOT_FOUND };
     }
     if (clientId === lobby.host.user_id) {
-      for (const userId of lobby.users.keys()) {
+      for (const userId in lobby.users) {
         this.#event.emit(lobbyEvent.HOST_DISCONNECT, userId);
       }
       this.#event.emit(lobbyEvent.DISCONNECT, lobby);
-      this.#lobbies.delete(lobbyId);
+      // this.#lobbies.delete(lobbyId);
+      delete this.#lobbies[lobbyId];
       return { message: `Lobby with id ${lobbyId} deleted.` };
-    } else if (lobby.users.has(clientId)) {
-      lobby.users.delete(clientId);
+    } else if (lobby.users[clientId]) {
+      delete lobby.users[clientId];
       this.#event.emit(lobbyEvent.DISCONNECT, clientId);
       this.#emitEventForLobby(lobby, lobbyEvent.USER_DISCONNECT, lobby);
       return lobby;
@@ -115,14 +152,14 @@ export default class LobbyManager {
   }
 
   public startLobby(lobbyId: string, clientId: string): Lobby | any {
-    const lobby = this.#lobbies.get(lobbyId);
+    const lobby = this.#lobbies[lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
     if (lobby.host.user_id !== clientId) {
       return { error: startLobbyStatus.NOT_HOST } as any;
     }
-    if (lobby.users.size < MIN_PLAYER_COUNT) {
+    if (Object.keys(lobby.users).length < MIN_PLAYER_COUNT) {
       return { error: startLobbyStatus.NOT_ENOUGH_PLAYERS } as any;
     }
     if (!lobby.quiz || !lobby.quizId) {
@@ -135,7 +172,7 @@ export default class LobbyManager {
   }
 
   public sendMessageToLobby(body: chatMessageHandlerBody & {clientId: string}): void {
-    const lobby = this.#lobbies.get(body.lobbyId);
+    const lobby = this.#lobbies[body.lobbyId];
     this.#emitEventForLobby(
       <Lobby>lobby,
       lobbyEvent.RECEIVE_MESSAGE,
@@ -147,7 +184,7 @@ export default class LobbyManager {
   public setQuestion(
     body: questionHandlerBody & { clientId: string }
   ): void | any {
-    const lobby = this.#lobbies.get(body.lobbyId);
+    const lobby = this.#lobbies[body.lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
@@ -171,7 +208,7 @@ export default class LobbyManager {
   }
 
   public takeQuestion(body: questionHandlerBody & {clientId: string}): void | any {
-    const lobby = this.#lobbies.get(body.lobbyId);
+    const lobby = this.#lobbies[body.lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
@@ -191,7 +228,7 @@ export default class LobbyManager {
   }
 
   public validateAnswer(body: validateQuestionHandlerBody & { clientId: string }): any {
-    const lobby = this.#lobbies.get(body.lobbyId);
+    const lobby = this.#lobbies[body.lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
@@ -201,37 +238,37 @@ export default class LobbyManager {
     if (lobby.assignee === undefined) {
       return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
     }
-    const user = lobby.users.get(lobby.assignee);
+    const user = lobby.users[lobby.assignee];
     if (body.isRight === validateStatus.CORRECT)
       user!.points += lobby.currentQuestion!.cost;
     else {
       user!.points -= lobby.currentQuestion!.cost;
       lobby.assignee = LobbyManager.#getNextAssignee(lobby.users, lobby.assignee);
     }
-
     const actionInfo = {
       playerId: lobby.assignee,
       questionId: lobby.currentQuestion!.id,
-      playerScore: lobby.users.get(<string>lobby.assignee),
+      playerScore: lobby.users[<string>lobby.assignee],
       isRight: body.isRight,
     };
     lobby.currentQuestion!.questionStatus = questionStatus.TAKEN;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.currentQuestion = undefined;
+    this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
     // TODO: check, if last question, then emit event for next round
     if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
       lobby.currentRound!++;
+      this.#emitEventForLobby(lobby, lobbyEvent.SWITCH_ROUND, lobby);
     }
     // TODO: check for end of game
     if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
-      // emit end of game
+      this.#emitEventForLobby(lobby, lobbyEvent.END_LOBBY, lobby);
     }
-    this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
   }
 
-  static #getNextAssignee(users: Map<any, any>, current: string) {
+  static #getNextAssignee(users: {[key: string]: ExtendedUserInfo}, current: string) {
     let counter;
-    const ids = Array.from(users.keys());
+    const ids = Object.keys(users);
     if (ids.indexOf(current) === ids.length - 1) counter = 0;
     else counter = (ids.indexOf(current)) + 1;
     return ids[counter];
