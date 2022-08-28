@@ -6,7 +6,7 @@ export const setConnection = (
   connection: SocketStream,
   request: FastifyRequest
 ): void => {
-  const clientId = <string>request.headers.client_id;
+  const clientId = <string>request.cookies.uuid;
   socketRegistry.add(connection.socket, clientId);
   // connection.socket.on("close", () => {
   //   lobbyManager.disconnectLobby(clientId);
