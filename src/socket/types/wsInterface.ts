@@ -1,20 +1,13 @@
-export type questionHandlerBody = {
-  lobbyId: string;
-  clientId: string;
-};
+import {validateStatus} from "~/modules/lobbyModule/types/lobbyConstants";
 
-export type createLobbyHandlerBody = {
-  quizId: string;
-  hostId: string;
-};
+export type createLobbyHandlerBody = {quizId: string};
 
-export type joinLobbyHandlerBody = {
-  lobbyId: string;
-  clientId: string;
-};
+export type defaultActionHandlerBody = {lobbyId: string}
 
-export type chatActionHandlerBody = {
-  lobbyId: string;
-  clientId: string;
-  message: string;
-};
+export type chatMessageHandlerBody = defaultActionHandlerBody & {message: string};
+
+export type questionHandlerBody = defaultActionHandlerBody & { questionId: string };
+
+export type answerQuestionHandlerBody = defaultActionHandlerBody & { answer: string };
+
+export type validateQuestionHandlerBody = defaultActionHandlerBody & { isRight: validateStatus };
