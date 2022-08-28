@@ -20,8 +20,9 @@ import {lobbyEvent} from "~/socket/types/lobbyEvent";
 import TimeoutTimer from "~/utils/TimeoutTimer";
 import {chatMessageHandlerBody, questionHandlerBody, validateQuestionHandlerBody,} from "~/socket/types/wsInterface";
 import {uuid} from "uuidv4";
-import {userManager} from "~/projectDependencies";
+import {quizManager, userManager} from "~/projectDependencies";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
+import { Question } from "../types/Question";
 
 export type clientEventHandler = (clientId: string) => void;
 
@@ -52,6 +53,7 @@ export default class LobbyManager {
       if (lobby.host.user_id === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
     const host = await userManager.getUser(hostId);
+    const quiz = await quizManager.getQuizQuestions(hostId, quizId);
     this.#lobbies.set(lobbyId, {
       id: lobbyId,
       host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
@@ -61,7 +63,7 @@ export default class LobbyManager {
       state: lobbyStatus.WAITING,
       currentRound: undefined,
       currentQuestion: undefined,
-      quiz: undefined,
+      quiz: { title: quiz.title, rounds: quiz.rounds},
       assignee: undefined,
     });
     return this.#lobbies.get(lobbyId);
@@ -123,8 +125,11 @@ export default class LobbyManager {
     if (lobby.users.size < MIN_PLAYER_COUNT) {
       return { error: startLobbyStatus.NOT_ENOUGH_PLAYERS } as any;
     }
+    if (!lobby.quiz || !lobby.quizId) {
+      return { error: startLobbyStatus.NO_QUIZ_PASSED } as any;
+    }
     lobby.state = lobbyStatus.STARTED;
-    lobby.currentRound = 0;
+    lobby.currentRound = 1;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
   }
@@ -149,8 +154,19 @@ export default class LobbyManager {
     if (lobby.host.user_id !== body.clientId) {
       return { error: startLobbyStatus.NOT_HOST } as any;
     }
+    if (!lobby.quiz) {
+      return { error: startLobbyStatus.NO_QUIZ_PASSED } as any;
+    }
+    if (!lobby.currentRound) {
+      lobby.currentRound = 1;
+    }
     lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
-    // TODO: set current question
+    const question  = lobby.quiz.rounds[lobby.currentRound].find((qs: any) => qs.id = body.questionId);
+    if (!question) {
+      return { error: "NO_QUESTION_TAKEN" } as any; 
+    }
+    lobby.currentQuestion = question;
+    lobby.currentQuestion.questionStatus = questionStatus.ACTIVE;
     // lobby.currentQuestion
   }
 
@@ -203,7 +219,13 @@ export default class LobbyManager {
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.currentQuestion = undefined;
     // TODO: check, if last question, then emit event for next round
+    if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
+      lobby.currentRound!++;
+    }
     // TODO: check for end of game
+    if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
+      // emit end of game
+    }
     this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
   }
 

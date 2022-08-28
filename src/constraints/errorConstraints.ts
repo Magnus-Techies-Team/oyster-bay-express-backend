@@ -31,4 +31,8 @@ export const ErrorConstraints = {
     type: "tokenExpired",
     message: "Token has expired",
   },
+  FORBIDDEN_QUIZ: {
+    type: "forbiddenQuiz",
+    mesage: "Current user does not have access to this quiz"
+  }
 };

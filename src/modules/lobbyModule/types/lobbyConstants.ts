@@ -15,6 +15,7 @@ export enum disconnectLobbyStatus {
 export enum startLobbyStatus {
   NOT_ENOUGH_PLAYERS = "NOT_ENOUGH_PLAYERS",
   NOT_HOST = "NOT_HOST",
+  NO_QUIZ_PASSED = "NO_QUIZ_PASSED"
 }
 
 export enum lobbyStatus {

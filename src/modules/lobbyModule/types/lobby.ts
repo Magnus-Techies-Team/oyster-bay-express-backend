@@ -12,7 +12,7 @@ export type Lobby = {
   state: lobbyStatus; // уже запущена или нет
   currentRound?: number;
   currentQuestion?: Question;
-  quiz?: Quiz; // хранить сам квиз
+  quiz: Quiz; // хранить сам квиз
   assignee?: string; // тот, кто отвечает
   condition?: lobbyCondition;
 };

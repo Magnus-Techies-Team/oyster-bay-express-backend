@@ -5,6 +5,8 @@ import {
   getQuizQuestions,
   insertQuizQuestions,
 } from "~/dataSources/dbQueries";
+import { ErrorConstraints } from "~/constraints/errorConstraints";
+import { questionStatus } from "~/modules/lobbyModule/types/lobbyConstants";
 
 export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string): Promise<any> {
@@ -24,6 +26,9 @@ export default class QuizManager {
     const result = await dbHelper.executePgQuery({ query: query, values: [] });
     if (result.error) {
       return { error: result.error };
+    }
+    if (!result.rows.length) {
+      return { error: ErrorConstraints.FORBIDDEN_QUIZ };
     }
     const quizQuestions = this.convertQuizToQuestions(result.rows);
     quizQuestions.totalRounds = Object.keys(quizQuestions.rounds).length;
@@ -77,20 +82,24 @@ export default class QuizManager {
       if (!resultObj.rounds[qs.round]) {
         resultObj.rounds[qs.round] = [
           {
+            id: qs.id,
             question: qs.question,
             answer: qs.answer,
             cost: qs.cost,
             topic: qs.topic,
             type: qs.type,
+            questionStatus: questionStatus.NOT_TAKEN
           },
         ];
       } else {
         resultObj.rounds[qs.round].push({
+          id: qs.id,
           question: qs.question,
           answer: qs.answer,
           cost: qs.cost,
           topic: qs.topic,
           type: qs.type,
+          questionStatus: questionStatus.NOT_TAKEN
         });
       }
     });

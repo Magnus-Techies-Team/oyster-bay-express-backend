@@ -8,7 +8,7 @@ export const verifyJWTHook = async (
 ): Promise<any> => {
   const refresh = req.cookies["ref"];
   const access = req.cookies["acc"];
-  if (!access) {
+  if (!refresh) {
     return rep.status(401).send(ErrorConstraints.NO_AUTH_TOKEN);
   }
   verify(

@@ -17,9 +17,9 @@ export default class lobbyConnectionHandler {
     this.#socket.send(socketMessageManager.generateString({ lobby: lobby }));
   };
 
-  readonly #joinLobbyListener = (body: defaultActionHandlerBody) => {
+  readonly #joinLobbyListener = async (body: defaultActionHandlerBody) => {
     const clientId = socketRegistry.getClientId(this.#socket);
-    const lobby = lobbyManager.joinLobby(<string>clientId, body.lobbyId);
+    const lobby = await lobbyManager.joinLobby(<string>clientId, body.lobbyId);
     if (lobby && lobby.error)
       this.#socket.send(
         JSON.stringify(
