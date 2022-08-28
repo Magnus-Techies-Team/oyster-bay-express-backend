@@ -7,9 +7,9 @@ export class RestError extends Error {
 
   constructor(error: CustomError, message: string) {
     super();
-    (this.statusCode = error.statusCode),
-      (this.error = error.errorMessage),
-      (this.message = message);
+    (this.statusCode = error.statusCode);
+    (this.error = error.errorMessage);
+    (this.message = message);
   }
 
   get json(): { [key: string]: any } {
