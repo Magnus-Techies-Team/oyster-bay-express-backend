@@ -1,4 +1,4 @@
-import {userState, userStatus} from "~/modules/lobbyModule/types/LobbyConstants";
+import {userState, userStatus} from "~/modules/lobbyModule/types/lobbyConstants";
 
 export type BasicUserInfo = {
   user_id: string;

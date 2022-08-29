@@ -6,7 +6,7 @@ import {
   insertQuizQuestions,
 } from "~/dataSources/dbQueries";
 import { ErrorConstraints } from "~/constraints/errorConstraints";
-import { questionStatus } from "~/modules/lobbyModule/types/LobbyConstants";
+import { questionStatus } from "~/modules/lobbyModule/types/lobbyConstants";
 
 export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string): Promise<any> {
@@ -52,7 +52,7 @@ export default class QuizManager {
 
   public generateQuizQueries(quiz: Quiz, author: string | null): string {
     const questionValues = new Array<string>();
-    const tags = `${quiz.tags.map((tag) => `'${tag}'`)}`;
+    const tags = quiz.tags.map((tag) => `'${tag}'`).join(",");
     let query = insertQuizQuestions(quiz, author, tags);
     quiz.questions.forEach((question) => {
       questionValues.push(`('${question.question.replace(

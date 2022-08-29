@@ -30,7 +30,7 @@
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-var-requires": "error",
     "@typescript-eslint/no-inferrable-types": "error",
-    "sonarjs/no-nested-template-literals": "off",
+    "sonarjs/no-nested-template-literals": "error",
     "sonarjs/no-ignored-return": "error"
   }
 }
