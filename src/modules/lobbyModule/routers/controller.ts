@@ -22,7 +22,7 @@ export const getCurrentLobbyStatus = async (
   req: FastifyRequest<RouteGenericInterfaceGetCurrentLobby>,
   rep: FastifyReply
 ): Promise<FastifyReply> => {
-  const lobby = lobbyManager.getLobby(req.query.lobbyId);
+  const lobby = lobbyManager.getLobby(req.params.lobbyId);
   if (lobby.error) return rep.status(400).send(new RestError(ErrorsTypes.BadRequest, lobby.error));
   let clientStatus;
   if (lobby.hostId === req.cookies.uuid) clientStatus = userStatus.HOST;
@@ -45,7 +45,7 @@ export const getLobby = async (
   req: FastifyRequest<RouteGenericInterfaceGetCurrentLobby>,
   rep: FastifyReply
 ): Promise<FastifyReply> => {
-  const lobby = lobbyManager.getLobby(<string>req.query.lobbyId);
+  const lobby = lobbyManager.getLobby(<string>req.params.lobbyId);
   return rep.status(200).send({lobby: lobby});
 };
 

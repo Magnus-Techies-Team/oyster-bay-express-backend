@@ -19,7 +19,7 @@ export const routes: RouteOptions[] = [
   },
   {
     method: "GET",
-    url: "/getCurrentLobbyStatus",
+    url: "/getCurrentLobbyStatus/:lobbyId",
     handler: <RouteHandler>controller.getCurrentLobbyStatus,
   },
   {

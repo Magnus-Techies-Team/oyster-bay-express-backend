@@ -14,10 +14,10 @@ interface RequestGenericInterfaceGetAllLobbies {
 
 interface RequestGenericInterfaceGetCurrentLobby {
   Body?: RequestBodyDefault;
-  Querystring: {
+  Querystring?: RequestQuerystringDefault;
+  Params: {
     lobbyId: string;
   };
-  Params?: RequestParamsDefault;
   Headers?: RequestHeadersDefault;
 }
 
