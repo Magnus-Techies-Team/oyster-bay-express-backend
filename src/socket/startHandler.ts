@@ -1,7 +1,8 @@
 import { WebSocket } from "ws";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
-import { lobbyManager, socketMessageManager } from "~/projectDependencies";
+import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
+import {defaultActionHandlerBody} from "~/socket/types/wsInterface";
 
 export default class startHandler {
   readonly #socket: WebSocket;
@@ -10,9 +11,10 @@ export default class startHandler {
     this.#socket = socket;
   }
 
-  readonly #startListener = async (lobbyId: string, clientId: string) => {
-    const lobby = lobbyManager.startLobby(lobbyId, clientId);
-    if (lobby.error)
+  readonly #startListener = async (body: defaultActionHandlerBody) => {
+    const clientId = socketRegistry.getClientId(this.#socket);
+    const lobby = lobbyManager.startLobby(body.lobbyId, <string>clientId);
+    if (lobby && lobby.error)
       this.#socket.send(
         socketMessageManager.generateString({ error: lobby.error })
       );

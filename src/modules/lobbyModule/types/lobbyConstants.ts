@@ -32,18 +32,15 @@ export enum lobbyCondition {
 export enum gameStatus {
   NO_HOST_QUESTION = "NO_HOST_QUESTION",
   NO_ACTIVE_QUESTION = "NO_ACTIVE_QUESTION",
+  ALREADY_ACTIVE_PLAYER_EXIST = "ALREADY_ACTIVE_PLAYER_EXIST",
   QUESTION_ALREADY_TAKEN = "QUESTION_ALREADY_TAKEN",
+  NO_QUESTION_FOUND = "NO_QUESTION_FOUND",
 }
 
 export enum questionStatus {
   ACTIVE = "active",
   TAKEN = "taken",
   NOT_TAKEN = "not_taken",
-}
-
-export enum validateStatus {
-  CORRECT = "correct",
-  NOT_CORRECT = "not_correct",
 }
 
 export enum userStatus {
@@ -58,6 +55,6 @@ export enum userState {
 }
 
 export const MAX_PLAYER_COUNT = 5;
-export const MIN_PLAYER_COUNT = 2;
+export const MIN_PLAYER_COUNT = 1;
 export const ANSWER_QUESTION_TIMEOUT = 20_000;
 export const QUESTION_CANCEL_TIMEOUT = 20_000;

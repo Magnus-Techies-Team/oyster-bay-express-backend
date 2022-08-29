@@ -41,3 +41,11 @@ export const getUserActiveLobby = async (
   return rep.status(200).send({activeLobbyId: null});
 };
 
+export const getLobby = async (
+  req: FastifyRequest<RouteGenericInterfaceGetCurrentLobby>,
+  rep: FastifyReply
+): Promise<FastifyReply> => {
+  const lobby = lobbyManager.getLobby(<string>req.query.lobbyId);
+  return rep.status(200).send({lobby: lobby});
+};
+

@@ -150,18 +150,16 @@ export default class Server {
       sendEvent(clientId, lobbyEvent.START, lobby);
     });
 
-    //
-
     lobbyManager.onSetQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.SET_QUESTION, lobby);
+      sendEvent(clientId, lobbyEvent.HOST_SET_QUESTION, lobby);
+    });
+
+    lobbyManager.onValidatedAnswer((clientId, lobby, actionInfo) => {
+      sendEvent(clientId, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
     });
 
     lobbyManager.onTakeQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.TAKE_QUESTION, lobby);
-    });
-
-    lobbyManager.onAnswerQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.ANSWER_QUESTION, lobby);
+      sendEvent(clientId, lobbyEvent.PLAYER_TAKE_QUESTION, lobby);
     });
 
     lobbyManager.onSwitchRound((clientId: string, lobby: Lobby) => {

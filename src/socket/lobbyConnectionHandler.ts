@@ -33,6 +33,7 @@ export default class lobbyConnectionHandler {
   readonly #spectateLobbyListener = async (body: defaultActionHandlerBody) => {
     const clientId = socketRegistry.getClientId(this.#socket);
     const lobby = await lobbyManager.spectateLobby({...body, clientId: <string>clientId});
+    if (lobby.error) this.#socket.send(socketMessageManager.generateString({error: lobby.error}));
     this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
   };
 

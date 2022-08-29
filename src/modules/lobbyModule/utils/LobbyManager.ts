@@ -12,7 +12,6 @@ import {
   startLobbyStatus,
   userState,
   userStatus,
-  validateStatus,
 } from "../types/lobbyConstants";
 import {EventEmitter} from "events";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
@@ -30,13 +29,17 @@ import {Question} from "../types/Question";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
 
 export type clientEventHandler = (clientId: string) => void;
+export type ActionInfo = {
+  playerId: string,
+  questionId: string,
+  playerScore: number,
+  isRight: boolean,
+};
 
 export default class LobbyManager {
   #event = new EventEmitter();
   #playersToAnswer = new TimeoutTimer(ANSWER_QUESTION_TIMEOUT);
   #questionsToCancel = new TimeoutTimer(QUESTION_CANCEL_TIMEOUT);
-  // readonly #lobbies = new Map<string, Lobby>();
-
   readonly #lobbies: {[key:string]:Lobby} = {};
 
   #emitEventForLobby(lobby: Lobby, event: lobbyEvent, ...args: any[]) {
@@ -89,7 +92,7 @@ export default class LobbyManager {
     return this.#lobbies[lobbyId];
   }
 
-  async spectateLobby(body: defaultActionHandlerBody & {clientId: string}): Promise<Lobby> {
+  async spectateLobby(body: defaultActionHandlerBody & {clientId: string}): Promise<any> {
     const lobby = this.#lobbies[body.lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
@@ -200,14 +203,17 @@ export default class LobbyManager {
     lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
     const question  = lobby.quiz.rounds[lobby.currentRound].find((qs: any) => qs.id = body.questionId);
     if (!question) {
-      return { error: "NO_QUESTION_TAKEN" } as any; 
+      return { error: gameStatus.NO_QUESTION_FOUND } as any;
     }
+    console.log(question);
+    if (question.questionStatus !== questionStatus.NOT_TAKEN) return { error: gameStatus.QUESTION_ALREADY_TAKEN } as any;
     lobby.currentQuestion = question;
     lobby.currentQuestion.questionStatus = questionStatus.ACTIVE;
-    // lobby.currentQuestion
+    lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
+    this.#emitEventForLobby(lobby, lobbyEvent.HOST_SET_QUESTION, lobby);
   }
 
-  public takeQuestion(body: questionHandlerBody & {clientId: string}): void | any {
+  public takeQuestion(body: defaultActionHandlerBody & {clientId: string}): void | any {
     const lobby = this.#lobbies[body.lobbyId];
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
@@ -219,12 +225,12 @@ export default class LobbyManager {
       return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
     }
     if (lobby.assignee) {
-      return { error: gameStatus.QUESTION_ALREADY_TAKEN } as any;
+      return { error: gameStatus.ALREADY_ACTIVE_PLAYER_EXIST } as any;
     }
     lobby.currentQuestion!.questionStatus = questionStatus.ACTIVE;
     lobby.assignee = body.clientId;
     lobby.condition = lobbyCondition.HOST_VALIDATES_ANSWER;
-    this.#emitEventForLobby(lobby, lobbyEvent.TAKE_QUESTION, lobby);
+    this.#emitEventForLobby(lobby, lobbyEvent.PLAYER_TAKE_QUESTION, lobby);
   }
 
   public validateAnswer(body: validateQuestionHandlerBody & { clientId: string }): any {
@@ -232,35 +238,30 @@ export default class LobbyManager {
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.host.user_id === body.clientId) {
-      return { error: gameStatus.NO_HOST_QUESTION } as any;
-    }
     if (lobby.assignee === undefined) {
       return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
     }
     const user = lobby.users[lobby.assignee];
-    if (body.isRight === validateStatus.CORRECT)
+    if (body.isRight)
       user!.points += lobby.currentQuestion!.cost;
     else {
       user!.points -= lobby.currentQuestion!.cost;
       lobby.assignee = LobbyManager.#getNextAssignee(lobby.users, lobby.assignee);
     }
-    const actionInfo = {
+    const actionInfo: ActionInfo = {
       playerId: lobby.assignee,
       questionId: lobby.currentQuestion!.id,
-      playerScore: lobby.users[<string>lobby.assignee],
+      playerScore: lobby.users[<string>lobby.assignee].points,
       isRight: body.isRight,
     };
     lobby.currentQuestion!.questionStatus = questionStatus.TAKEN;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.currentQuestion = undefined;
-    this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
-    // TODO: check, if last question, then emit event for next round
+    this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, {lobby, actionInfo});
     if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
       lobby.currentRound!++;
       this.#emitEventForLobby(lobby, lobbyEvent.SWITCH_ROUND, lobby);
     }
-    // TODO: check for end of game
     if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
       this.#emitEventForLobby(lobby, lobbyEvent.END_LOBBY, lobby);
     }
@@ -303,15 +304,15 @@ export default class LobbyManager {
   }
 
   onSetQuestion(handler: (clientId: string, lobby: Lobby) => void):void {
-    this.#event.on(lobbyEvent.SET_QUESTION, handler);
+    this.#event.on(lobbyEvent.HOST_SET_QUESTION, handler);
   }
 
   onTakeQuestion(handler: (clientId: string, lobby: Lobby) => void): void {
-    this.#event.on(lobbyEvent.TAKE_QUESTION, handler);
+    this.#event.on(lobbyEvent.PLAYER_TAKE_QUESTION, handler);
   }
 
-  onAnswerQuestion(handler: (clientId: string, lobby: Lobby) => void): void {
-    this.#event.on(lobbyEvent.ANSWER_QUESTION, handler);
+  onValidatedAnswer(handler: (clientId: string, lobby: Lobby, actionInfo: ActionInfo) => void): void {
+    this.#event.on(lobbyEvent.HOST_VALIDATED_ANSWER, handler);
   }
 
   onSwitchRound(handler: (clientId: string, lobby: Lobby) => void): void {

@@ -7,7 +7,7 @@
     "build": "tsc",
     "start": "link-module-alias && node ./dist/index.js",
     "build:dev": "tsc --watch",
-    "start:dev": "npm run seed && link-module-alias && env-cmd -f env/dev.env node ./dist/index.js",
+    "start:dev": "npm run seed && env-cmd -f env/dev.env node ./dist/index.js",
     "prettier-format": "pretty-quick --staged",
     "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",

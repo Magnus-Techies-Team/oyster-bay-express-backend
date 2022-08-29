@@ -32,4 +32,9 @@ export const routes: RouteOptions[] = [
     url: "/getUserActiveLobby",
     handler: <RouteHandler>controller.getUserActiveLobby,
   },
+  {
+    method: "GET",
+    url: "/getLobby",
+    handler: <RouteHandler>controller.getLobby,
+  }
 ];
