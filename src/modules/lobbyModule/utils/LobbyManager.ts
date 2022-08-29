@@ -19,13 +19,14 @@ import {
   questionHandlerBody,
   validateQuestionHandlerBody,
 } from "~/socket/types/wsInterface";
-// import {uuid} from "uuidv4";
+import {uuid} from "uuidv4";
 import {quizManager, userManager} from "~/projectDependencies";
 import {Question} from "../types/Question";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
-import { ErrorConstants } from "../types/errorConstants";
+import {ErrorConstants} from "../types/errorConstants";
 
 export type clientEventHandler = (clientId: string) => void;
+
 export type ActionInfo = {
   playerId: string,
   questionId: string,
@@ -55,8 +56,8 @@ export default class LobbyManager {
   }
 
   async createLobby(quizId: string, hostId: string): Promise<any> {
-    // const lobbyId = uuid();
-    const lobbyId = "06c7547f-31f6-4875-8b18-1be5fbe44d00";
+    const lobbyId = uuid();
+    // const lobbyId = "06c7547f-31f6-4875-8b18-1be5fbe44d00";
     for (const id in this.#lobbies)
       if (this.#lobbies[id].host.user_id === hostId)
         return { error: ErrorConstants.ALREADY_IN_GAME } as any;
@@ -157,6 +158,9 @@ export default class LobbyManager {
     if (!lobby.quiz || !lobby.quizId) {
       return { error: ErrorConstants.NO_QUIZ_PASSED } as any;
     }
+    if (lobby.state === lobbyStatus.STARTED) {
+      return { error: ErrorConstants.GAME_ALREADY_STARTED } as any;
+    }
     if (lobby.assignee) lobby.assignee = undefined;
     lobby.state = lobbyStatus.STARTED;
     lobby.currentRound = 1;
@@ -255,7 +259,11 @@ export default class LobbyManager {
       this.#emitEventForLobby(lobby, lobbyEvent.SWITCH_ROUND, {lobby: lobby});
     }
     if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
-      this.#emitEventForLobby(lobby, lobbyEvent.END_LOBBY, lobby);
+      lobby.state = lobbyStatus.ENDED;
+      const users = Object.values(lobby.users);
+      const winner = users.reduce((prev, curr) => prev.points > curr.points ? prev : curr);
+      this.#emitEventForLobby(lobby, lobbyEvent.END_LOBBY, {lobby, winner});
+      delete this.#lobbies[body.lobbyId];
     }
   }
 

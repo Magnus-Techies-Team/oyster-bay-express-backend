@@ -1,4 +1,5 @@
 export enum lobbyStatus {
+  ENDED = "ended",
   STARTED = "started",
   WAITING = "waiting",
 }

@@ -14,6 +14,7 @@ export default class SocketRegistry {
     if (clientId) {
       this.#socketByClientId.delete(clientId);
       this.#clientIdBySocket.delete(socket);
+      socket.close();
     }
   }
 

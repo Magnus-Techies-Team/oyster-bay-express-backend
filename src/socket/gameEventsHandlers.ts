@@ -9,6 +9,7 @@ import {
 } from "./types/wsInterface";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {ActionInfo} from "~/modules/lobbyModule/utils/LobbyManager";
+import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
 
 export default class gameEventsHandler {
   readonly #socket: WebSocket;
@@ -80,9 +81,10 @@ export default class gameEventsHandler {
   };
 
   readonly #endLobbyListener = (
-    body: {lobby: Lobby}
+    body: {lobby: Lobby, winner: ExtendedUserInfo}
   ) => {
-    this.#socket.send(socketMessageManager.generateString({lobby: body.lobby}));
+    this.#socket.send(socketMessageManager.generateString({lobby: body.lobby, winner: body.winner}));
+    socketRegistry.remove(this.#socket);
   };
 
   init(): void {
@@ -93,6 +95,7 @@ export default class gameEventsHandler {
     this.#socket.on(lobbyEvent.VALIDATE_ANSWER, this.#validateAnswerListener);
     this.#socket.on(lobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
     this.#socket.on(lobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
+    this.#socket.on(lobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 
   destroy(): void {

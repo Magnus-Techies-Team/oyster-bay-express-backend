@@ -34,7 +34,7 @@ export const routes: RouteOptions[] = [
   },
   {
     method: "GET",
-    url: "/getLobby",
+    url: "/getLobby/:lobbyId",
     handler: <RouteHandler>controller.getLobby,
   }
 ];

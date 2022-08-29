@@ -63,5 +63,4 @@ export const ErrorConstants = {
     type: "questionAlreadyTaken",
     message: "Question already taken"
   },
-
 };

@@ -104,7 +104,6 @@ export default class Server {
         for (const handler of handlers) handler.init();
         socket.on("close", () => {
           for (const handler of handlers) handler.destroy();
-          socketRegistry.remove(socket);
         });
       }
     );
