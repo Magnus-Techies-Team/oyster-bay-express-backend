@@ -33,7 +33,7 @@ export const ErrorConstants = {
   },
   USER_NOT_FOUND: {
     type: "userNotFound",
-    mesage: "User not found"
+    message: "User not found"
   },
   NO_QUIZ_PASSED: {
     type: "noQuizPassed",
@@ -49,7 +49,7 @@ export const ErrorConstants = {
   },
   ALREADY_ACTIVE_PLAYER_EXIST: {
     type: "alreadyActivePlayerExist",
-    mesage: "Active player already exist"
+    message: "Active player already exist"
   },
   NOT_ENOUGH_PLAYERS: {
     type: "notEnoughPlayers",
