@@ -1,5 +1,5 @@
 import {
-  ANSWER_QUESTION_TIMEOUT,
+  ANSWER_QUESTION_TIMEOUT, createLobbyError,
   disconnectLobbyStatus,
   gameStatus,
   joinLobbyStatus,
@@ -23,7 +23,7 @@ import {
   questionHandlerBody,
   validateQuestionHandlerBody,
 } from "~/socket/types/wsInterface";
-import {uuid} from "uuidv4";
+// import {uuid} from "uuidv4";
 import {quizManager, userManager} from "~/projectDependencies";
 import {Question} from "../types/Question";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
@@ -58,12 +58,16 @@ export default class LobbyManager {
   }
 
   async createLobby(quizId: string, hostId: string): Promise<any> {
-    const lobbyId = uuid();
+    // const lobbyId = uuid();
+    const lobbyId = "06c7547f-31f6-4875-8b18-1be5fbe44d00";
     for (const id in this.#lobbies)
       if (this.#lobbies[id].host.user_id === hostId)
         return { error: joinLobbyStatus.ALREADY_IN_GAME } as any;
     const host = await userManager.getUser(hostId);
     const quiz = await quizManager.getQuizQuestions(hostId, quizId);
+    if (quiz.error) {
+      return { error: createLobbyError.QUIZ_NOT_FOUND } as any;
+    }
     // this.#lobbies.set(lobbyId, {
     //   id: lobbyId,
     //   host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
@@ -168,9 +172,11 @@ export default class LobbyManager {
     if (!lobby.quiz || !lobby.quizId) {
       return { error: startLobbyStatus.NO_QUIZ_PASSED } as any;
     }
+    if (lobby.assignee) lobby.assignee = undefined;
     lobby.state = lobbyStatus.STARTED;
     lobby.currentRound = 1;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
+    lobby.assignee = LobbyManager.#getNextAssignee(lobby.users, lobby.assignee);
     this.#emitEventForLobby(lobby, lobbyEvent.START, lobby);
   }
 
@@ -197,6 +203,7 @@ export default class LobbyManager {
     if (!lobby.quiz) {
       return { error: startLobbyStatus.NO_QUIZ_PASSED } as any;
     }
+    if (lobby.currentQuestion) return { error: gameStatus.QUESTION_ALREADY_TAKEN } as any;
     if (!lobby.currentRound) {
       lobby.currentRound = 1;
     }
@@ -205,8 +212,8 @@ export default class LobbyManager {
     if (!question) {
       return { error: gameStatus.NO_QUESTION_FOUND } as any;
     }
-    console.log(question);
     if (question.questionStatus !== questionStatus.NOT_TAKEN) return { error: gameStatus.QUESTION_ALREADY_TAKEN } as any;
+    if (lobby.assignee !== undefined) lobby.assignee = undefined;
     lobby.currentQuestion = question;
     lobby.currentQuestion.questionStatus = questionStatus.ACTIVE;
     lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
@@ -238,7 +245,7 @@ export default class LobbyManager {
     if (!lobby) {
       return { error: joinLobbyStatus.GAME_NOT_FOUND } as any;
     }
-    if (lobby.assignee === undefined) {
+    if (lobby.assignee === undefined || lobby.currentQuestion === undefined) {
       return { error: gameStatus.NO_ACTIVE_QUESTION } as any;
     }
     const user = lobby.users[lobby.assignee];
@@ -260,16 +267,17 @@ export default class LobbyManager {
     this.#emitEventForLobby(lobby, lobbyEvent.HOST_VALIDATED_ANSWER, {lobby, actionInfo});
     if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
       lobby.currentRound!++;
-      this.#emitEventForLobby(lobby, lobbyEvent.SWITCH_ROUND, lobby);
+      this.#emitEventForLobby(lobby, lobbyEvent.SWITCH_ROUND, {lobby: lobby});
     }
     if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
       this.#emitEventForLobby(lobby, lobbyEvent.END_LOBBY, lobby);
     }
   }
 
-  static #getNextAssignee(users: {[key: string]: ExtendedUserInfo}, current: string) {
+  static #getNextAssignee(users: {[key: string]: ExtendedUserInfo}, current: string | undefined) {
     let counter;
     const ids = Object.keys(users);
+    if (current === undefined) return ids[0];
     if (ids.indexOf(current) === ids.length - 1) counter = 0;
     else counter = (ids.indexOf(current)) + 1;
     return ids[counter];

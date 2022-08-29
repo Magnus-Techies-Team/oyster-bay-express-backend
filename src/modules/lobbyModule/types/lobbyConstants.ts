@@ -1,3 +1,7 @@
+export enum createLobbyError {
+  QUIZ_NOT_FOUND = "QUIZ_NOT_FOUND",
+}
+
 export enum joinLobbyStatus {
   GAME_NOT_FOUND = "GAME_NOT_FOUND",
   LOBBY_IS_FULL = "LOBBY_IS_FULL",
