@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {
   defaultActionHandlerBody,
@@ -90,23 +90,23 @@ export default class gameEventsHandler {
 
   init(): void {
     this.#socket.on(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
-    this.#socket.on(lobbyEvent.HOST_SET_QUESTION, this.#hostSetQuestionListener);
+    this.#socket.on(LobbyEvent.HOST_SET_QUESTION, this.#hostSetQuestionListener);
     this.#socket.on(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
-    this.#socket.on(lobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
+    this.#socket.on(LobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
     this.#socket.on(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
-    this.#socket.on(lobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
-    this.#socket.on(lobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
-    this.#socket.on(lobbyEvent.END_LOBBY, this.#endLobbyListener);
+    this.#socket.on(LobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
+    this.#socket.on(LobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
+    this.#socket.on(LobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 
   destroy(): void {
     this.#socket.off(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
-    this.#socket.off(lobbyEvent.HOST_SET_QUESTION, this.#setQuestionListener);
+    this.#socket.off(LobbyEvent.HOST_SET_QUESTION, this.#setQuestionListener);
     this.#socket.off(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
-    this.#socket.off(lobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
+    this.#socket.off(LobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
     this.#socket.off(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
-    this.#socket.off(lobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
-    this.#socket.off(lobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
-    this.#socket.off(lobbyEvent.END_LOBBY, this.#endLobbyListener);
+    this.#socket.off(LobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
+    this.#socket.off(LobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
+    this.#socket.off(LobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 }

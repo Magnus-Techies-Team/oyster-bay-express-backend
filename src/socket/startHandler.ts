@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {defaultActionHandlerBody} from "~/socket/types/wsInterface";
@@ -27,11 +27,11 @@ export default class startHandler {
 
   init(): void {
     this.#socket.on(LobbyMethod.START_LOBBY, this.#startListener);
-    this.#socket.on(lobbyEvent.START, this.#listener);
+    this.#socket.on(LobbyEvent.START, this.#listener);
   }
 
   destroy(): void {
     this.#socket.off(LobbyMethod.START_LOBBY, this.#startListener);
-    this.#socket.off(lobbyEvent.START, this.#listener);
+    this.#socket.off(LobbyEvent.START, this.#listener);
   }
 }

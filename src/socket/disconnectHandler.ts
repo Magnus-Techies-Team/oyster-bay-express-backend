@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import { socketRegistry } from "~/projectDependencies";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {socketMessageManager} from "~/projectDependencies";
@@ -26,14 +26,14 @@ export default class disconnectHandler {
   };
 
   init(): void {
-    this.#socket.on(lobbyEvent.DISCONNECT, this.#disconnectListener);
-    this.#socket.on(lobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
-    this.#socket.on(lobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);
+    this.#socket.on(LobbyEvent.DISCONNECT, this.#disconnectListener);
+    this.#socket.on(LobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
+    this.#socket.on(LobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);
   }
 
   destroy(): void {
-    this.#socket.off(lobbyEvent.DISCONNECT, this.#disconnectListener);
-    this.#socket.off(lobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
-    this.#socket.off(lobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);
+    this.#socket.off(LobbyEvent.DISCONNECT, this.#disconnectListener);
+    this.#socket.off(LobbyEvent.HOST_DISCONNECT, this.#hostDisconnectListener);
+    this.#socket.off(LobbyEvent.USER_DISCONNECT, this.#userDisconnectListener);
   }
 }

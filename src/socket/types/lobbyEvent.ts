@@ -1,4 +1,4 @@
-export enum lobbyEvent {
+export enum LobbyEvent {
   USER_JOIN = "user_join_lobby",
   DISCONNECT = "disconnect",
   HOST_DISCONNECT = "host_disconnect",

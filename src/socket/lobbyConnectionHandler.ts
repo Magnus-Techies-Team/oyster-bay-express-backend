@@ -1,5 +1,5 @@
 import { WebSocket } from "ws";
-import { lobbyEvent } from "~/socket/types/lobbyEvent";
+import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {
   createLobbyHandlerBody, defaultActionHandlerBody,
@@ -46,13 +46,13 @@ export default class lobbyConnectionHandler {
     this.#socket.on(LobbyMethod.CREATE_LOBBY, this.#createLobbyListener);
     this.#socket.on(LobbyMethod.JOIN_LOBBY, this.#joinLobbyListener);
     this.#socket.on(LobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
-    this.#socket.on(lobbyEvent.USER_JOIN, this.#userJoinListener);
+    this.#socket.on(LobbyEvent.USER_JOIN, this.#userJoinListener);
   }
 
   destroy(): void {
     this.#socket.off(LobbyMethod.CREATE_LOBBY, this.#createLobbyListener);
     this.#socket.off(LobbyMethod.JOIN_LOBBY, this.#joinLobbyListener);
     this.#socket.off(LobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
-    this.#socket.off(lobbyEvent.USER_JOIN, this.#userJoinListener);
+    this.#socket.off(LobbyEvent.USER_JOIN, this.#userJoinListener);
   }
 }

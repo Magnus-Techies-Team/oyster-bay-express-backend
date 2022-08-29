@@ -5,7 +5,7 @@ import generalHook from "~/server/utils/generalHook";
 import {plugin, pluginSet, router, routerSet} from "~/server/serverTypes";
 import {RouteOptions} from "@fastify/websocket";
 import {lobbyManager, socketRegistry} from "~/projectDependencies";
-import {lobbyEvent} from "~/socket/types/lobbyEvent";
+import {LobbyEvent} from "~/socket/types/lobbyEvent";
 import {initLocalDatabasesIfNotExists} from "~/dataSources/initLocalDatabases";
 import disconnectHandler from "~/socket/disconnectHandler";
 import chatHandler from "~/socket/chatHandler";
@@ -110,7 +110,7 @@ export default class Server {
 
     const sendEvent = (
       clientId: string,
-      eventName: lobbyEvent,
+      eventName: LobbyEvent,
       ...args: any[]
     ) => {
       const socket = socketRegistry.getSocket(clientId);
@@ -126,47 +126,47 @@ export default class Server {
     };
 
     lobbyManager.onJoin((clientId, lobby) => {
-      sendEvent(clientId, lobbyEvent.USER_JOIN, lobby);
+      sendEvent(clientId, LobbyEvent.USER_JOIN, lobby);
     });
 
     lobbyManager.onDisconnect((clientId) => {
-      sendEvent(clientId, lobbyEvent.DISCONNECT);
+      sendEvent(clientId, LobbyEvent.DISCONNECT);
     });
 
     lobbyManager.onUserDisconnect((clientId, deletedClientId) => {
-      sendEvent(clientId, lobbyEvent.USER_DISCONNECT, deletedClientId);
+      sendEvent(clientId, LobbyEvent.USER_DISCONNECT, deletedClientId);
     });
 
     lobbyManager.onHostDisconnect((clientId) => {
-      sendEvent(clientId, lobbyEvent.HOST_DISCONNECT);
+      sendEvent(clientId, LobbyEvent.HOST_DISCONNECT);
     });
 
     lobbyManager.onChat((clientId, senderId, message) => {
-      sendEvent(clientId, lobbyEvent.RECEIVE_MESSAGE, senderId, message);
+      sendEvent(clientId, LobbyEvent.RECEIVE_MESSAGE, senderId, message);
     });
 
     lobbyManager.onStart((clientId, lobby) => {
-      sendEvent(clientId, lobbyEvent.START, lobby);
+      sendEvent(clientId, LobbyEvent.START, lobby);
     });
 
     lobbyManager.onSetQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.HOST_SET_QUESTION, lobby);
+      sendEvent(clientId, LobbyEvent.HOST_SET_QUESTION, lobby);
     });
 
     lobbyManager.onValidatedAnswer((clientId, lobby, actionInfo) => {
-      sendEvent(clientId, lobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
+      sendEvent(clientId, LobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
     });
 
     lobbyManager.onTakeQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.PLAYER_TAKE_QUESTION, lobby);
+      sendEvent(clientId, LobbyEvent.PLAYER_TAKE_QUESTION, lobby);
     });
 
     lobbyManager.onSwitchRound((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.SWITCH_ROUND, lobby);
+      sendEvent(clientId, LobbyEvent.SWITCH_ROUND, lobby);
     });
 
     lobbyManager.onEndLobby((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, lobbyEvent.END_LOBBY, lobby);
+      sendEvent(clientId, LobbyEvent.END_LOBBY, lobby);
     });
   }
 }
