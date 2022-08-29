@@ -12,8 +12,6 @@ flowchart LR
     A[User]-->B[Authorize/2FA]
     B-->C([Social networks])
     B-->D([login/password])
-    C-->C1(Github)
-    C-->C2(Google)
     A-->E([Create game template])
     A-->F([Create game lobby])
     F-->F1([Share game link invite])
