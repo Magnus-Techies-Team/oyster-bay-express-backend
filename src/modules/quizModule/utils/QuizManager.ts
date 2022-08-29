@@ -28,7 +28,7 @@ export default class QuizManager {
       return { error: result.error };
     }
     if (!result.rows.length) {
-      return { error: ErrorConstraints.FORBIDDEN_QUIZ };
+      return { error: ErrorConstraints.INVALID_QUIZ };
     }
     const quizQuestions = this.convertQuizToQuestions(result.rows);
     quizQuestions.totalRounds = Object.keys(quizQuestions.rounds).length;
