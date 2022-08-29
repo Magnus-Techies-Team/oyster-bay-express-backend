@@ -14,7 +14,7 @@ export const setConnection = (
       lobbies[lobbyId].host.user_id === request.cookies.uuid || 
         lobbies[lobbyId].users[clientId] ||
         lobbies[lobbyId].spectators[clientId]
-    ) connection.socket.send(socketMessageManager.generateString({lobby: lobbies[lobbyId]}));
+    ) connection.socket.send(socketMessageManager.generateString({lobby: lobbies[lobbyId], currentUser: lobbyManager.getUser(lobbies[lobbyId], clientId)}, ));
   // connection.socket.on("close", () => {
   //   lobbyManager.disconnectLobby(clientId);
   // });
