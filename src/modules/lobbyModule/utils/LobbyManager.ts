@@ -118,6 +118,7 @@ export default class LobbyManager {
     }
     const user = await userManager.getUser(clientId);
     lobby.users[clientId] = {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED};
+    if (lobby.spectators[clientId]) delete lobby.spectators[clientId];
     this.#emitEventForLobby(lobby, LobbyEvent.USER_JOIN, lobby);
   }
 
