@@ -6,7 +6,7 @@ import {
   insertQuizQuestions,
 } from "~/dataSources/dbQueries";
 import { ErrorConstraints } from "~/constraints/errorConstraints";
-import { questionStatus } from "~/modules/lobbyModule/types/lobbyConstants";
+import { questionStatus } from "~/modules/lobbyModule/types/LobbyConstants";
 
 export default class QuizManager {
   public async recordQuiz(quiz: Quiz, author: string): Promise<any> {

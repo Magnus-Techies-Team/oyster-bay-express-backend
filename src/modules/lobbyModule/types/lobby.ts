@@ -1,4 +1,4 @@
-import {lobbyCondition, lobbyStatus} from "./lobbyConstants";
+import {lobbyCondition, lobbyStatus} from "./LobbyConstants";
 import { Quiz } from "./Quiz";
 import { Question } from "./Question";
 import {ExtendedUserInfo, BasicUserInfo} from "~/modules/lobbyModule/types/User";

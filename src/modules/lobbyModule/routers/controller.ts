@@ -6,7 +6,7 @@ import {
 } from "~/modules/lobbyModule/types/reqInterface";
 import {RestError} from "~/utils/restError";
 import {ErrorsTypes} from "~/types/restErrorTypes";
-import {userStatus} from "~/modules/lobbyModule/types/lobbyConstants";
+import {userStatus} from "~/modules/lobbyModule/types/LobbyConstants";
 
 export const getAllAvailableLobbies = async (
   req: FastifyRequest<RouteGenericInterfaceGetAllLobbies>,

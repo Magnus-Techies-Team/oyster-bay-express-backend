@@ -8,7 +8,7 @@ import {
   questionStatus,
   userState,
   userStatus,
-} from "../types/lobbyConstants";
+} from "../types/LobbyConstants";
 import {EventEmitter} from "events";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {lobbyEvent} from "~/socket/types/lobbyEvent";
