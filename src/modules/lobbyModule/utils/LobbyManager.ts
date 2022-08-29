@@ -52,9 +52,9 @@ export default class LobbyManager {
 
   getUser(lobby: Lobby, clientId: string): BasicUserInfo | undefined {
     if (lobby.host.user_id === clientId) return lobby.host;
-    else if (lobby.users[clientId]) return { user_id: lobby.users[clientId].user_id, user_name: lobby.users[clientId].user_name, status: lobby.users[clientId].status, state: lobby.users[clientId].state };
-    else if (lobby.spectators[clientId]) return lobby.spectators[clientId];
-    else return undefined;
+    if (lobby.users[clientId]) return { user_id: lobby.users[clientId].user_id, user_name: lobby.users[clientId].user_name, status: lobby.users[clientId].status, state: lobby.users[clientId].state };
+    if (lobby.spectators[clientId]) return lobby.spectators[clientId];
+    return undefined;
   }
 
   getLobby(lobbyId?: string): {[key:string]:Lobby} | Lobby | any {
