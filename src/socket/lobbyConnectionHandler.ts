@@ -35,7 +35,7 @@ export default class lobbyConnectionHandler {
     const lobby = await lobbyManager.spectateLobby({...body, clientId: <string>clientId});
     if (!lobby) this.#socket.send(socketMessageManager.generateString({error: ErrorConstants.GAME_NOT_FOUND}));
     else if (lobby && lobby.error) this.#socket.send(socketMessageManager.generateString({error: lobby.error}));
-    else this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
+    else this.#socket.send(socketMessageManager.generateString(lobby));
   };
 
   readonly #userJoinListener = async (body: defaultHandlerResponse) => {
