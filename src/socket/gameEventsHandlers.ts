@@ -10,6 +10,7 @@ import {
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {ActionInfo} from "~/modules/lobbyModule/utils/LobbyManager";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
+import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
 export default class gameEventsHandler {
   readonly #socket: WebSocket;
@@ -88,22 +89,22 @@ export default class gameEventsHandler {
   };
 
   init(): void {
-    this.#socket.on(lobbyEvent.SET_QUESTION, this.#setQuestionListener);
+    this.#socket.on(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
     this.#socket.on(lobbyEvent.HOST_SET_QUESTION, this.#hostSetQuestionListener);
-    this.#socket.on(lobbyEvent.TAKE_QUESTION, this.#takeQuestionListener);
+    this.#socket.on(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
     this.#socket.on(lobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
-    this.#socket.on(lobbyEvent.VALIDATE_ANSWER, this.#validateAnswerListener);
+    this.#socket.on(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
     this.#socket.on(lobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
     this.#socket.on(lobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
     this.#socket.on(lobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 
   destroy(): void {
-    this.#socket.off(lobbyEvent.SET_QUESTION, this.#setQuestionListener);
+    this.#socket.off(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
     this.#socket.off(lobbyEvent.HOST_SET_QUESTION, this.#setQuestionListener);
-    this.#socket.off(lobbyEvent.TAKE_QUESTION, this.#takeQuestionListener);
+    this.#socket.off(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
     this.#socket.off(lobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
-    this.#socket.off(lobbyEvent.VALIDATE_ANSWER, this.#validateAnswerListener);
+    this.#socket.off(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
     this.#socket.off(lobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
     this.#socket.off(lobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
     this.#socket.off(lobbyEvent.END_LOBBY, this.#endLobbyListener);

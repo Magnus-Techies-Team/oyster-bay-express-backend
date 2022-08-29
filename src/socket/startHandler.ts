@@ -3,6 +3,7 @@ import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import { Lobby } from "~/modules/lobbyModule/types/lobby";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {defaultActionHandlerBody} from "~/socket/types/wsInterface";
+import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
 export default class startHandler {
   readonly #socket: WebSocket;
@@ -25,12 +26,12 @@ export default class startHandler {
   };
 
   init(): void {
-    this.#socket.on(lobbyEvent.START_LOBBY, this.#startListener);
+    this.#socket.on(LobbyMethod.START_LOBBY, this.#startListener);
     this.#socket.on(lobbyEvent.START, this.#listener);
   }
 
   destroy(): void {
-    this.#socket.off(lobbyEvent.START_LOBBY, this.#startListener);
+    this.#socket.off(LobbyMethod.START_LOBBY, this.#startListener);
     this.#socket.off(lobbyEvent.START, this.#listener);
   }
 }

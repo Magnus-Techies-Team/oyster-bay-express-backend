@@ -118,7 +118,6 @@ export default class LobbyManager {
     const user = await userManager.getUser(clientId);
     lobby.users[clientId] = {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED};
     this.#emitEventForLobby(lobby, lobbyEvent.USER_JOIN, lobby);
-    // return lobby;
   }
 
   public disconnectLobby(lobbyId: string, clientId: string): void | any {
@@ -131,14 +130,11 @@ export default class LobbyManager {
         this.#event.emit(lobbyEvent.HOST_DISCONNECT, userId);
       }
       this.#event.emit(lobbyEvent.DISCONNECT, lobby);
-      // this.#lobbies.delete(lobbyId);
       delete this.#lobbies[lobbyId];
-      return { message: `Lobby with id ${lobbyId} deleted.` };
     } else if (lobby.users[clientId]) {
       delete lobby.users[clientId];
       this.#event.emit(lobbyEvent.DISCONNECT, clientId);
       this.#emitEventForLobby(lobby, lobbyEvent.USER_DISCONNECT, lobby);
-      return lobby;
     } else {
       return { error: ErrorConstants.USER_NOT_FOUND } as any;
     }

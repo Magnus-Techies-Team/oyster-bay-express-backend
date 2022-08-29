@@ -5,7 +5,7 @@ import {
   createLobbyHandlerBody, defaultActionHandlerBody,
 } from "~/socket/types/wsInterface";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
-import {lobbyMethod} from "~/socket/types/lobbyMethod";
+import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
 export default class lobbyConnectionHandler {
   readonly #socket: WebSocket;
@@ -43,16 +43,16 @@ export default class lobbyConnectionHandler {
   };
 
   init(): void {
-    this.#socket.on(lobbyEvent.CREATE_LOBBY, this.#createLobbyListener);
-    this.#socket.on(lobbyEvent.JOIN_LOBBY, this.#joinLobbyListener);
-    this.#socket.on(lobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
+    this.#socket.on(LobbyMethod.CREATE_LOBBY, this.#createLobbyListener);
+    this.#socket.on(LobbyMethod.JOIN_LOBBY, this.#joinLobbyListener);
+    this.#socket.on(LobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
     this.#socket.on(lobbyEvent.USER_JOIN, this.#userJoinListener);
   }
 
   destroy(): void {
-    this.#socket.off(lobbyEvent.CREATE_LOBBY, this.#createLobbyListener);
-    this.#socket.off(lobbyEvent.JOIN_LOBBY, this.#joinLobbyListener);
-    this.#socket.off(lobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
+    this.#socket.off(LobbyMethod.CREATE_LOBBY, this.#createLobbyListener);
+    this.#socket.off(LobbyMethod.JOIN_LOBBY, this.#joinLobbyListener);
+    this.#socket.off(LobbyMethod.SPECTATE_LOBBY, this.#spectateLobbyListener);
     this.#socket.off(lobbyEvent.USER_JOIN, this.#userJoinListener);
   }
 }

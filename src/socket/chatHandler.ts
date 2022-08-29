@@ -2,6 +2,7 @@ import { WebSocket } from "ws";
 import { lobbyEvent } from "~/socket/types/lobbyEvent";
 import {chatMessageHandlerBody} from "~/socket/types/wsInterface";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
+import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
 export default class chatHandler {
   readonly #socket: WebSocket;
@@ -23,12 +24,12 @@ export default class chatHandler {
   };
 
   init(): void {
-    this.#socket.on(lobbyEvent.SEND_MESSAGE, this.#sendMessageListener);
+    this.#socket.on(LobbyMethod.SEND_MESSAGE, this.#sendMessageListener);
     this.#socket.on(lobbyEvent.RECEIVE_MESSAGE, this.#receiveMessageListener);
   }
 
   destroy(): void {
-    this.#socket.off(lobbyEvent.SEND_MESSAGE, this.#sendMessageListener);
+    this.#socket.off(LobbyMethod.SEND_MESSAGE, this.#sendMessageListener);
     this.#socket.off(lobbyEvent.RECEIVE_MESSAGE, this.#receiveMessageListener);
   }
 }

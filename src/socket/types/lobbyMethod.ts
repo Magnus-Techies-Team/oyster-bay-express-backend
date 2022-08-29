@@ -1,4 +1,4 @@
-export enum lobbyMethod {
+export enum LobbyMethod {
     CREATE_LOBBY = "create_lobby",
     JOIN_LOBBY = "join_lobby",
     SPECTATE_LOBBY = "spectate_lobby",
@@ -7,8 +7,5 @@ export enum lobbyMethod {
     SEND_MESSAGE = "send_message",
     SET_QUESTION = "set_question",
     TAKE_QUESTION = "take_question",
-    ANSWER_QUESTION = "answer_question",
-    VALIDATE_QUESTION = "validate_question",
+    VALIDATE_ANSWER = "validate_answer",
 }
-
-// TODO: switch to these events instead of corresponding events in LobbyEvent
