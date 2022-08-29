@@ -68,18 +68,6 @@ export default class LobbyManager {
     if (quiz.error) {
       return { error: createLobbyError.QUIZ_NOT_FOUND } as any;
     }
-    // this.#lobbies.set(lobbyId, {
-    //   id: lobbyId,
-    //   host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
-    //   users: new Map<string, ExtendedUserInfo>(),
-    //   quizId: quizId,
-    //   maxPlayers: MAX_PLAYER_COUNT,
-    //   state: lobbyStatus.WAITING,
-    //   currentRound: undefined,
-    //   currentQuestion: undefined,
-    //   quiz: { title: quiz.title, rounds: quiz.rounds},
-    //   assignee: undefined,
-    // });
     this.#lobbies[lobbyId] = {
       id: lobbyId,
       host: {user_id: hostId, user_name: host.login, state: userState.CONNECTED, status: userStatus.HOST},
