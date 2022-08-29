@@ -1,6 +1,6 @@
 import { WebSocket } from "ws";
 import { LobbyEvent } from "~/socket/types/lobbyEvent";
-import {chatMessageHandlerBody} from "~/socket/types/wsInterface";
+import {chatMessageHandlerBody, defaultHandlerResponse} from "~/socket/types/wsInterface";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
@@ -16,11 +16,8 @@ export default class chatHandler {
     lobbyManager.sendMessageToLobby({...body, clientId: <string>clientId});
   };
 
-  readonly #receiveMessageListener = async (
-    senderId: string,
-    message: string
-  ) => {
-    this.#socket.send(socketMessageManager.generateString({senderId: senderId, message: message}));
+  readonly #receiveMessageListener = async (body: defaultHandlerResponse & {senderId: string, message: string}) => {
+    this.#socket.send(socketMessageManager.generateString(body));
   };
 
   init(): void {

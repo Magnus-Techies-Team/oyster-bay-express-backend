@@ -11,7 +11,6 @@ import disconnectHandler from "~/socket/disconnectHandler";
 import chatHandler from "~/socket/chatHandler";
 import startHandler from "~/socket/startHandler";
 import lobbyConnectionHandler from "~/socket/lobbyConnectionHandler";
-import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import gameEventsHandler from "~/socket/gameEventsHandlers";
 
 export default class Server {
@@ -125,8 +124,8 @@ export default class Server {
       }
     };
 
-    lobbyManager.onJoin((clientId, lobby) => {
-      sendEvent(clientId, LobbyEvent.USER_JOIN, lobby);
+    lobbyManager.onJoin((clientId, lobby, currentUser) => {
+      sendEvent(clientId, LobbyEvent.USER_JOIN, lobby, currentUser);
     });
 
     lobbyManager.onDisconnect((clientId) => {
@@ -145,28 +144,28 @@ export default class Server {
       sendEvent(clientId, LobbyEvent.RECEIVE_MESSAGE, senderId, message);
     });
 
-    lobbyManager.onStart((clientId, lobby) => {
-      sendEvent(clientId, LobbyEvent.START, lobby);
+    lobbyManager.onStart((clientId, lobby, currentUser) => {
+      sendEvent(clientId, LobbyEvent.START, lobby, currentUser);
     });
 
-    lobbyManager.onSetQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, LobbyEvent.HOST_SET_QUESTION, lobby);
+    lobbyManager.onSetQuestion((clientId, lobby, currentUser) => {
+      sendEvent(clientId, LobbyEvent.HOST_SET_QUESTION, lobby, currentUser);
     });
 
-    lobbyManager.onValidatedAnswer((clientId, lobby, actionInfo) => {
-      sendEvent(clientId, LobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo);
+    lobbyManager.onValidatedAnswer((clientId, lobby, actionInfo, currentUser) => {
+      sendEvent(clientId, LobbyEvent.HOST_VALIDATED_ANSWER, lobby, actionInfo, currentUser);
     });
 
-    lobbyManager.onTakeQuestion((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, LobbyEvent.PLAYER_TAKE_QUESTION, lobby);
+    lobbyManager.onTakeQuestion((clientId, lobby, currentUser) => {
+      sendEvent(clientId, LobbyEvent.PLAYER_TAKE_QUESTION, lobby, currentUser);
     });
 
-    lobbyManager.onSwitchRound((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, LobbyEvent.SWITCH_ROUND, lobby);
+    lobbyManager.onSwitchRound((clientId, lobby, currentUser) => {
+      sendEvent(clientId, LobbyEvent.SWITCH_ROUND, lobby, currentUser);
     });
 
-    lobbyManager.onEndLobby((clientId: string, lobby: Lobby) => {
-      sendEvent(clientId, LobbyEvent.END_LOBBY, lobby);
+    lobbyManager.onEndLobby((clientId, lobby, winner, currentUser, ) => {
+      sendEvent(clientId, LobbyEvent.END_LOBBY, lobby, winner, currentUser);
     });
   }
 }

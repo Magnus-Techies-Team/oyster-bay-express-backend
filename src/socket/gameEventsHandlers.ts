@@ -2,13 +2,12 @@ import { WebSocket } from "ws";
 import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {
-  defaultActionHandlerBody,
+  defaultActionHandlerBody, defaultHandlerResponse,
   // answerQuestionHandlerBody,
   questionHandlerBody,
   validateQuestionHandlerBody
 } from "./types/wsInterface";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
-import {ActionInfo} from "~/modules/lobbyModule/utils/LobbyManager";
 import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
 import {LobbyMethod} from "~/socket/types/lobbyMethod";
 
@@ -31,9 +30,9 @@ export default class gameEventsHandler {
   };
 
   readonly #hostSetQuestionListener = (
-    body: Lobby
+    body: defaultHandlerResponse
   ) => {
-    this.#socket.send(socketMessageManager.generateString({lobby: body}));
+    this.#socket.send(socketMessageManager.generateString(body));
   };
 
   readonly #takeQuestionListener = (body: defaultActionHandlerBody) => {
@@ -47,10 +46,10 @@ export default class gameEventsHandler {
   };
 
   readonly #playerTakeQuestionListener = (
-    body: {lobby: Lobby}
+    body: defaultHandlerResponse
   ) => {
     this.#socket.send(
-      socketMessageManager.generateString({lobby: body})
+      socketMessageManager.generateString(body)
     );
   };
 
@@ -67,24 +66,24 @@ export default class gameEventsHandler {
   };
 
   readonly #hostValidatedAnswerListener = (
-    body: {lobby: Lobby, actionInfo: ActionInfo}
+    body: defaultHandlerResponse
   ) => {
     console.log(body);
     this.#socket.send(
-      socketMessageManager.generateString({lobby: body.lobby, actionInfo: body.actionInfo})
+      socketMessageManager.generateString(body)
     );
   };
 
   readonly #switchRoundListener = (
-    body: {lobby: Lobby}
+    body: defaultHandlerResponse
   ) => {
-    this.#socket.send(socketMessageManager.generateString({lobby: body.lobby}));
+    this.#socket.send(socketMessageManager.generateString(body));
   };
 
   readonly #endLobbyListener = (
     body: {lobby: Lobby, winner: ExtendedUserInfo}
   ) => {
-    this.#socket.send(socketMessageManager.generateString({lobby: body.lobby, winner: body.winner}));
+    this.#socket.send(socketMessageManager.generateString(body));
     socketRegistry.remove(this.#socket);
   };
 

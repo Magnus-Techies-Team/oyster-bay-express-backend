@@ -22,7 +22,7 @@ import {
 import {uuid} from "uuidv4";
 import {quizManager, userManager} from "~/projectDependencies";
 import {Question} from "../types/Question";
-import {ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
+import {BasicUserInfo, ExtendedUserInfo} from "~/modules/lobbyModule/types/User";
 import {ErrorConstants} from "../types/errorConstants";
 
 export type clientEventHandler = (clientId: string) => void;
@@ -40,11 +40,21 @@ export default class LobbyManager {
   #questionsToCancel = new TimeoutTimer(QUESTION_CANCEL_TIMEOUT);
   readonly #lobbies: {[key:string]:Lobby} = {};
 
-  #emitEventForLobby(lobby: Lobby, event: LobbyEvent, ...args: any[]) {
-    const users = [lobby.host.user_id , ...Object.keys(lobby.users), ...[lobby.spectators]];
+  #emitEventForLobby(lobby: Lobby, event: LobbyEvent, args: any) {
+    const users = [lobby.host.user_id , ...Object.keys(lobby.users), ...Object.keys(lobby.spectators)];
     for (const userId of users) {
-      this.#event.emit(event, userId, ...args);
+      {
+        const currentUser = this.getUser(lobby, userId);
+        this.#event.emit(event, userId, {...args, currentUser: currentUser});
+      }
     }
+  }
+
+  getUser(lobby: Lobby, clientId: string): BasicUserInfo | undefined {
+    if (lobby.host.user_id === clientId) return lobby.host;
+    else if (lobby.users[clientId]) return { user_id: lobby.users[clientId].user_id, user_name: lobby.users[clientId].user_name, status: lobby.users[clientId].status, state: lobby.users[clientId].state };
+    else if (lobby.spectators[clientId]) return lobby.spectators[clientId];
+    else return undefined;
   }
 
   getLobby(lobbyId?: string): {[key:string]:Lobby} | Lobby | any {
@@ -79,7 +89,7 @@ export default class LobbyManager {
       currentQuestion: undefined,
       assignee: undefined,
     };
-    return this.#lobbies[lobbyId];
+    return {lobby: this.#lobbies[lobbyId], currentUser: this.#lobbies[lobbyId].host};
   }
 
   async spectateLobby(body: defaultActionHandlerBody & {clientId: string}): Promise<any> {
@@ -95,7 +105,7 @@ export default class LobbyManager {
     } else {
       const user = await userManager.getUser(body.clientId);
       lobby.spectators[body.clientId] = ({user_id: body.clientId, user_name: user.login, state: userState.CONNECTED, status: userStatus.SPECTATOR});
-      return lobby;
+      return {lobby: lobby, currentUser: lobby.spectators[body.clientId]};
     }
   }
 
@@ -119,7 +129,7 @@ export default class LobbyManager {
     const user = await userManager.getUser(clientId);
     lobby.users[clientId] = {user_id: clientId, user_name: user.login, points: 0, status: userStatus.PLAYER, state: userState.CONNECTED};
     if (lobby.spectators[clientId]) delete lobby.spectators[clientId];
-    this.#emitEventForLobby(lobby, LobbyEvent.USER_JOIN, lobby);
+    this.#emitEventForLobby(lobby, LobbyEvent.USER_JOIN, {lobby: lobby});
   }
 
   public disconnectLobby(lobbyId: string, clientId: string): void | any {
@@ -136,7 +146,7 @@ export default class LobbyManager {
     } else if (lobby.users[clientId]) {
       delete lobby.users[clientId];
       this.#event.emit(LobbyEvent.DISCONNECT, clientId);
-      this.#emitEventForLobby(lobby, LobbyEvent.USER_DISCONNECT, lobby);
+      this.#emitEventForLobby(lobby, LobbyEvent.USER_DISCONNECT, {lobby: lobby});
     } else {
       return { error: ErrorConstants.USER_NOT_FOUND } as any;
     }
@@ -164,7 +174,7 @@ export default class LobbyManager {
     lobby.currentRound = 1;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.assignee = LobbyManager.#getNextAssignee(lobby.users, lobby.assignee);
-    this.#emitEventForLobby(lobby, LobbyEvent.START, lobby);
+    this.#emitEventForLobby(lobby, LobbyEvent.START, {lobby: lobby});
   }
 
   public sendMessageToLobby(body: chatMessageHandlerBody & {clientId: string}): void {
@@ -172,8 +182,10 @@ export default class LobbyManager {
     this.#emitEventForLobby(
       <Lobby>lobby,
       LobbyEvent.RECEIVE_MESSAGE,
-      body.clientId,
-      body.message
+      {
+        lobby: lobby,
+        message: {senderId: body.clientId, text: body.message}
+      }
     );
   }
 
@@ -204,7 +216,7 @@ export default class LobbyManager {
     lobby.currentQuestion = question;
     lobby.currentQuestion.questionStatus = questionStatus.ACTIVE;
     lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
-    this.#emitEventForLobby(lobby, LobbyEvent.HOST_SET_QUESTION, lobby);
+    this.#emitEventForLobby(lobby, LobbyEvent.HOST_SET_QUESTION, {lobby: lobby});
   }
 
   public takeQuestion(body: defaultActionHandlerBody & {clientId: string}): void | any {
@@ -224,7 +236,7 @@ export default class LobbyManager {
     lobby.currentQuestion!.questionStatus = questionStatus.ACTIVE;
     lobby.assignee = body.clientId;
     lobby.condition = lobbyCondition.HOST_VALIDATES_ANSWER;
-    this.#emitEventForLobby(lobby, LobbyEvent.PLAYER_TAKE_QUESTION, lobby);
+    this.#emitEventForLobby(lobby, LobbyEvent.PLAYER_TAKE_QUESTION, {lobby: lobby});
   }
 
   public validateAnswer(body: validateQuestionHandlerBody & { clientId: string }): any {
@@ -251,7 +263,7 @@ export default class LobbyManager {
     lobby.currentQuestion!.questionStatus = questionStatus.TAKEN;
     lobby.condition = lobbyCondition.PLAYER_CHOOSES_QUESTION;
     lobby.currentQuestion = undefined;
-    this.#emitEventForLobby(lobby, LobbyEvent.HOST_VALIDATED_ANSWER, {lobby, actionInfo});
+    this.#emitEventForLobby(lobby, LobbyEvent.HOST_VALIDATED_ANSWER, {lobby: lobby, actionInfo: actionInfo});
     if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
       lobby.currentRound!++;
       this.#emitEventForLobby(lobby, LobbyEvent.SWITCH_ROUND, {lobby: lobby});
@@ -260,7 +272,7 @@ export default class LobbyManager {
       lobby.state = lobbyStatus.ENDED;
       const users = Object.values(lobby.users);
       const winner = users.reduce((prev, curr) => prev.points > curr.points ? prev : curr);
-      this.#emitEventForLobby(lobby, LobbyEvent.END_LOBBY, {lobby, winner});
+      this.#emitEventForLobby(lobby, LobbyEvent.END_LOBBY, {lobby: lobby, winner: winner});
       delete this.#lobbies[body.lobbyId];
     }
   }
@@ -274,7 +286,7 @@ export default class LobbyManager {
     return ids[counter];
   }
 
-  onJoin(handler: (clientId: string, lobby: Lobby) => void): void {
+  onJoin(handler: (clientId: string, lobby: Lobby, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.USER_JOIN, handler);
   }
 
@@ -298,27 +310,27 @@ export default class LobbyManager {
     this.#event.on(LobbyEvent.RECEIVE_MESSAGE, handler);
   }
 
-  onStart(handler: (clientId: string, lobby: Lobby) => void): void {
+  onStart(handler: (clientId: string, lobby: Lobby, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.START, handler);
   }
 
-  onSetQuestion(handler: (clientId: string, lobby: Lobby) => void):void {
+  onSetQuestion(handler: (clientId: string, lobby: Lobby, currentUser: BasicUserInfo) => void):void {
     this.#event.on(LobbyEvent.HOST_SET_QUESTION, handler);
   }
 
-  onTakeQuestion(handler: (clientId: string, lobby: Lobby) => void): void {
+  onTakeQuestion(handler: (clientId: string, lobby: Lobby, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.PLAYER_TAKE_QUESTION, handler);
   }
 
-  onValidatedAnswer(handler: (clientId: string, lobby: Lobby, actionInfo: ActionInfo) => void): void {
+  onValidatedAnswer(handler: (clientId: string, lobby: Lobby, actionInfo: ActionInfo, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.HOST_VALIDATED_ANSWER, handler);
   }
 
-  onSwitchRound(handler: (clientId: string, lobby: Lobby) => void): void {
+  onSwitchRound(handler: (clientId: string, lobby: Lobby, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.SWITCH_ROUND, handler);
   }
 
-  onEndLobby(handler: (clientId: string, lobby: Lobby) => void): void {
+  onEndLobby(handler: (clientId: string, lobby: Lobby, winner: ExtendedUserInfo, currentUser: BasicUserInfo) => void): void {
     this.#event.on(LobbyEvent.END_LOBBY, handler);
   }
 }

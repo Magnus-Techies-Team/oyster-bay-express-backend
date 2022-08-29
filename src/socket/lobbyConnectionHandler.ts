@@ -2,9 +2,8 @@ import { WebSocket } from "ws";
 import { LobbyEvent } from "~/socket/types/lobbyEvent";
 import {lobbyManager, socketMessageManager, socketRegistry} from "~/projectDependencies";
 import {
-  createLobbyHandlerBody, defaultActionHandlerBody,
+  createLobbyHandlerBody, defaultActionHandlerBody, defaultHandlerResponse,
 } from "~/socket/types/wsInterface";
-import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {LobbyMethod} from "~/socket/types/lobbyMethod";
 import {ErrorConstants} from "~/modules/lobbyModule/types/errorConstants";
 
@@ -39,8 +38,9 @@ export default class lobbyConnectionHandler {
     else this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
   };
 
-  readonly #userJoinListener = async (lobby: Lobby) => {
-    this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
+  readonly #userJoinListener = async (body: defaultHandlerResponse) => {
+    console.log(body);
+    this.#socket.send(socketMessageManager.generateString({lobby: body.lobby, currentUser: body.currentUser}));
   };
 
   init(): void {
