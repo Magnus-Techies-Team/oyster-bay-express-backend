@@ -6,6 +6,7 @@ import {
 } from "~/socket/types/wsInterface";
 import {Lobby} from "~/modules/lobbyModule/types/lobby";
 import {LobbyMethod} from "~/socket/types/lobbyMethod";
+import {ErrorConstants} from "~/modules/lobbyModule/types/errorConstants";
 
 export default class lobbyConnectionHandler {
   readonly #socket: WebSocket;
@@ -33,12 +34,12 @@ export default class lobbyConnectionHandler {
   readonly #spectateLobbyListener = async (body: defaultActionHandlerBody) => {
     const clientId = socketRegistry.getClientId(this.#socket);
     const lobby = await lobbyManager.spectateLobby({...body, clientId: <string>clientId});
-    if (lobby.error) this.#socket.send(socketMessageManager.generateString({error: lobby.error}));
-    this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
+    if (!lobby) this.#socket.send(socketMessageManager.generateString({error: ErrorConstants.GAME_NOT_FOUND}));
+    else if (lobby && lobby.error) this.#socket.send(socketMessageManager.generateString({error: lobby.error}));
+    else this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
   };
 
   readonly #userJoinListener = async (lobby: Lobby) => {
-    // console.log(lobby.users);
     this.#socket.send(socketMessageManager.generateString({lobby: lobby}));
   };
 
