@@ -5,14 +5,16 @@ import { dbHelper, quizManager } from "~/projectDependencies";
 import { Question } from "~/modules/quizModule/types/Quiz";
 import { initLocalDatabasesIfNotExists } from "~/dataSources/initLocalDatabases";
 import { checkIfQuizesExist } from "./dataSources/dbQueries";
+import { postgresConfig } from "./dataSources/pgConfig";
 
-export const seedDB = async (): Promise<void> => {
+const seedDB = async (): Promise<void> => {
+  await dbHelper.init(postgresConfig);
   await initLocalDatabasesIfNotExists();
   const empty = await dbHelper.executePgQuery({
     query: checkIfQuizesExist,
     values: [],
   });
-  if (empty.rows[0].count > 0) return;
+  if (empty.rows[0].count > 0) process.exit();
   const path = resolve(process.cwd(), "seeds");
   const seeds = fs.readdirSync(path);
   for (const seed of seeds) {
@@ -31,4 +33,7 @@ export const seedDB = async (): Promise<void> => {
     const query = quizManager.generateQuizQueries(quiz, null);
     await dbHelper.executePgQuery({ query: query, values: [] });
   }
+  process.exit();
 };
+
+seedDB();

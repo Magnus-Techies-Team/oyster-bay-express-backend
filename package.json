@@ -7,12 +7,13 @@
     "build": "tsc",
     "start": "link-module-alias && node ./dist/index.js",
     "build:dev": "tsc --watch",
-    "start:dev": "link-module-alias && env-cmd -f env/dev.env node ./dist/index.js",
+    "start:dev": "npm run seed && link-module-alias && env-cmd -f env/dev.env node ./dist/index.js",
     "prettier-format": "pretty-quick --staged",
     "prettier-check": "pretty-quick --check",
     "lint": "eslint ./src/",
     "lint:fix": "eslint ./src/ --fix",
-    "prepare": "husky install && chmod u+x .husky/pre-commit"
+    "prepare": "husky install && chmod u+x .husky/pre-commit",
+    "seed": "link-module-alias && env-cmd -f env/dev.env node ./dist/seeding.js"
   },
   "repository": {
     "type": "git",
