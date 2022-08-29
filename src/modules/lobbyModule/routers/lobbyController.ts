@@ -1,6 +1,6 @@
 import { SocketStream } from "@fastify/websocket";
 import { FastifyRequest } from "fastify";
-import { socketRegistry /*,lobbyManager*/ } from "~/projectDependencies";
+import {lobbyManager, socketMessageManager, socketRegistry /*,lobbyManager*/} from "~/projectDependencies";
 
 export const setConnection = (
   connection: SocketStream,
@@ -8,6 +8,13 @@ export const setConnection = (
 ): void => {
   const clientId = <string>request.cookies.uuid;
   socketRegistry.add(connection.socket, clientId);
+  const lobbies = lobbyManager.getLobby();
+  for (const lobbyId in lobbies)
+    if (
+      lobbies[lobbyId].host.user_id === request.cookies.uuid || 
+        lobbies[lobbyId].users[clientId] ||
+        lobbies[lobbyId].spectators[clientId]
+    ) connection.socket.send(socketMessageManager.generateString({lobby: lobbies[lobbyId]}));
   // connection.socket.on("close", () => {
   //   lobbyManager.disconnectLobby(clientId);
   // });
