@@ -1,4 +1,4 @@
-import {questionStatus} from "~/modules/lobbyModule/types/LobbyConstants";
+import {questionStatus} from "~/modules/lobbyModule/types/lobbyConstants";
 
 export type Question = {
   id: string;
