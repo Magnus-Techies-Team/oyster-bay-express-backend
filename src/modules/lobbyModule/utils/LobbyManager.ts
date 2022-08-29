@@ -201,7 +201,7 @@ export default class LobbyManager {
       lobby.currentRound = 1;
     }
     lobby.condition = lobbyCondition.PLAYERS_TAKE_QUESTION;
-    const question  = lobby.quiz.rounds[lobby.currentRound].find((qs: any) => qs.id = body.questionId);
+    const question  = lobby.quiz.rounds[lobby.currentRound].find((qs: any) => qs.id === body.questionId);
     if (!question) {
       return { error: gameStatus.NO_QUESTION_FOUND } as any;
     }
