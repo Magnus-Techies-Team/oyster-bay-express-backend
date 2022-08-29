@@ -87,15 +87,16 @@ export default class LobbyManager {
     if (!lobby) {
       return { error: ErrorConstants.GAME_NOT_FOUND } as any;
     }
-    if (lobby.host.user_id === body.clientId) {
+    else if (lobby.host.user_id === body.clientId) {
       return { error: ErrorConstants.HOST_IN_GAME } as any;
     }
-    if (lobby.users[body.clientId]) {
+    else if (lobby.users[body.clientId]) {
       return { error: ErrorConstants.ALREADY_JOINED } as any;
+    } else {
+      const user = await userManager.getUser(body.clientId);
+      lobby.spectators[body.clientId] = ({user_id: body.clientId, user_name: user.login, state: userState.CONNECTED, status: userStatus.SPECTATOR});
+      return lobby;
     }
-    const user = await userManager.getUser(body.clientId);
-    lobby.spectators[body.clientId] = ({user_id: body.clientId, user_name: user.login, state: userState.CONNECTED, status: userStatus.SPECTATOR});
-    return lobby;
   }
 
   async joinLobby(clientId: string, lobbyId: string): Promise<any> {

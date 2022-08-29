@@ -25,7 +25,7 @@ export const getCurrentLobbyStatus = async (
   const lobby = lobbyManager.getLobby(req.params.lobbyId);
   if (lobby.error) return rep.status(400).send(new RestError(ErrorsTypes.BadRequest, lobby.error));
   let clientStatus;
-  if (lobby.hostId === req.cookies.uuid) clientStatus = userStatus.HOST;
+  if (lobby.host.user_id === req.cookies.uuid) clientStatus = userStatus.HOST;
   else if (lobby.users[req.cookies.uuid]) clientStatus = userStatus.PLAYER;
   else clientStatus = userStatus.SPECTATOR;
   return rep.status(200).send({lobbyStatus: lobby.state, userStatus: clientStatus});
