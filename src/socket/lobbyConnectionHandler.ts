@@ -39,7 +39,6 @@ export default class lobbyConnectionHandler {
   };
 
   readonly #userJoinListener = async (body: defaultHandlerResponse) => {
-    console.log(body);
     this.#socket.send(socketMessageManager.generateString({lobby: body.lobby, currentUser: body.currentUser}));
   };
 

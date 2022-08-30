@@ -202,7 +202,7 @@ export default class LobbyManager {
     if (!lobby.quiz) {
       return { error: ErrorConstants.NO_QUIZ_PASSED } as any;
     }
-    if (lobby.currentQuestion) return { error: ErrorConstants.QUESTION_ALREADY_TAKEN } as any;
+    if (lobby.currentQuestion) return { error: ErrorConstants.ALREADY_ACTIVE_QUESTION_EXISTS } as any;
     if (!lobby.currentRound) {
       lobby.currentRound = 1;
     }
@@ -266,14 +266,15 @@ export default class LobbyManager {
     this.#emitEventForLobby(lobby, LobbyEvent.HOST_VALIDATED_ANSWER, {lobby: lobby, actionInfo: actionInfo});
     if (lobby.quiz.rounds[lobby.currentRound!].every((q: Question) => q.questionStatus !== questionStatus.NOT_TAKEN)) {
       lobby.currentRound!++;
-      this.#emitEventForLobby(lobby, LobbyEvent.SWITCH_ROUND, {lobby: lobby});
-    }
-    if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
-      lobby.state = lobbyStatus.ENDED;
-      const users = Object.values(lobby.users);
-      const winner = users.reduce((prev, curr) => prev.points > curr.points ? prev : curr);
-      this.#emitEventForLobby(lobby, LobbyEvent.END_LOBBY, {lobby: lobby, winner: winner});
-      delete this.#lobbies[body.lobbyId];
+      if (lobby.currentRound! > Number(Object.keys(lobby.quiz.rounds)["length"])) {
+        lobby.state = lobbyStatus.ENDED;
+        lobby.currentRound!--;
+        const users = Object.values(lobby.users);
+        const winner = users.reduce((prev, curr) => prev.points > curr.points ? prev : curr);
+        this.#emitEventForLobby(lobby, LobbyEvent.END_LOBBY, {lobby: lobby, winner: winner});
+        delete this.#lobbies[body.lobbyId];
+      }
+      else this.#emitEventForLobby(lobby, LobbyEvent.SWITCH_ROUND, {lobby: lobby});
     }
   }
 

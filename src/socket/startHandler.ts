@@ -22,7 +22,7 @@ export default class startHandler {
   };
 
   readonly #listener = async (lobby: Lobby) => {
-    this.#socket.send(socketMessageManager.generateString({ lobby: lobby }));
+    this.#socket.send(socketMessageManager.generateString(lobby));
   };
 
   init(): void {

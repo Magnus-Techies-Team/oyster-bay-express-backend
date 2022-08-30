@@ -77,7 +77,6 @@ export default class Server {
     this.serverInstance.websocketServer.on(
       "connection",
       (socket: WS.WebSocket) => {
-        console.log("Connected");
         socket.on("message", (message) => {
           try {
             const msg = JSON.parse(message.toString());

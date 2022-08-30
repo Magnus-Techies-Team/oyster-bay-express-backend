@@ -47,6 +47,10 @@ export const ErrorConstants = {
     type: "noActiveQuestion",
     message: "No active question",
   },
+  ALREADY_ACTIVE_QUESTION_EXISTS: {
+    type: "alreadyActiveQuestionExists",
+    message: "Active question already exist",
+  },
   ALREADY_ACTIVE_PLAYER_EXIST: {
     type: "alreadyActivePlayerExist",
     message: "Active player already exist"

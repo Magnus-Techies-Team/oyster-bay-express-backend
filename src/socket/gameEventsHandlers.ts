@@ -68,7 +68,6 @@ export default class gameEventsHandler {
   readonly #hostValidatedAnswerListener = (
     body: defaultHandlerResponse
   ) => {
-    console.log(body);
     this.#socket.send(
       socketMessageManager.generateString(body)
     );
