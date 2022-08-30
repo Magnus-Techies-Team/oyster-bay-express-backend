@@ -29,12 +29,6 @@ export default class gameEventsHandler {
     }
   };
 
-  readonly #hostSetQuestionListener = (
-    body: defaultHandlerResponse
-  ) => {
-    this.#socket.send(socketMessageManager.generateString(body));
-  };
-
   readonly #takeQuestionListener = (body: defaultActionHandlerBody) => {
     const clientId = socketRegistry.getClientId(this.#socket);
     const lobby = lobbyManager.takeQuestion({...body, clientId: <string>clientId});
@@ -43,14 +37,6 @@ export default class gameEventsHandler {
         socketMessageManager.generateString({ error: lobby.error })
       );
     }
-  };
-
-  readonly #playerTakeQuestionListener = (
-    body: defaultHandlerResponse
-  ) => {
-    this.#socket.send(
-      socketMessageManager.generateString(body)
-    );
   };
 
   readonly #validateAnswerListener = (
@@ -65,20 +51,6 @@ export default class gameEventsHandler {
     }
   };
 
-  readonly #hostValidatedAnswerListener = (
-    body: defaultHandlerResponse
-  ) => {
-    this.#socket.send(
-      socketMessageManager.generateString(body)
-    );
-  };
-
-  readonly #switchRoundListener = (
-    body: defaultHandlerResponse
-  ) => {
-    this.#socket.send(socketMessageManager.generateString(body));
-  };
-
   readonly #endLobbyListener = (
     body: {lobby: Lobby, winner: ExtendedUserInfo}
   ) => {
@@ -86,25 +58,31 @@ export default class gameEventsHandler {
     socketRegistry.remove(this.#socket);
   };
 
+  readonly #defaultResponseListener = (
+    body: defaultHandlerResponse
+  ) => {
+    this.#socket.send(socketMessageManager.generateString(body));
+  };
+
   init(): void {
     this.#socket.on(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
-    this.#socket.on(LobbyEvent.HOST_SET_QUESTION, this.#hostSetQuestionListener);
+    this.#socket.on(LobbyEvent.HOST_SET_QUESTION, this.#defaultResponseListener);
     this.#socket.on(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
-    this.#socket.on(LobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
+    this.#socket.on(LobbyEvent.PLAYER_TAKE_QUESTION, this.#defaultResponseListener);
     this.#socket.on(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
-    this.#socket.on(LobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
-    this.#socket.on(LobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
+    this.#socket.on(LobbyEvent.HOST_VALIDATED_ANSWER, this.#defaultResponseListener);
+    this.#socket.on(LobbyEvent.SWITCH_ROUND, this.#defaultResponseListener);
     this.#socket.on(LobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 
   destroy(): void {
     this.#socket.off(LobbyMethod.SET_QUESTION, this.#setQuestionListener);
-    this.#socket.off(LobbyEvent.HOST_SET_QUESTION, this.#setQuestionListener);
+    this.#socket.off(LobbyEvent.HOST_SET_QUESTION, this.#defaultResponseListener);
     this.#socket.off(LobbyMethod.TAKE_QUESTION, this.#takeQuestionListener);
-    this.#socket.off(LobbyEvent.PLAYER_TAKE_QUESTION, this.#playerTakeQuestionListener);
+    this.#socket.off(LobbyEvent.PLAYER_TAKE_QUESTION, this.#defaultResponseListener);
     this.#socket.off(LobbyMethod.VALIDATE_ANSWER, this.#validateAnswerListener);
-    this.#socket.off(LobbyEvent.HOST_VALIDATED_ANSWER, this.#hostValidatedAnswerListener);
-    this.#socket.off(LobbyEvent.SWITCH_ROUND, this.#switchRoundListener);
+    this.#socket.off(LobbyEvent.HOST_VALIDATED_ANSWER, this.#defaultResponseListener);
+    this.#socket.off(LobbyEvent.SWITCH_ROUND, this.#defaultResponseListener);
     this.#socket.off(LobbyEvent.END_LOBBY, this.#endLobbyListener);
   }
 }
