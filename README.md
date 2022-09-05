@@ -10,10 +10,7 @@ MVP functionality is considered in:
 ```mermaid
 flowchart LR
     A[User]-->B[Authorize/2FA]
-    B-->C([Social networks])
     B-->D([login/password])
-    C-->C1(Github)
-    C-->C2(Google)
     A-->E([Create game template])
     A-->F([Create game lobby])
     F-->F1([Share game link invite])
@@ -33,8 +30,7 @@ flowchart LR
 ## Technologies for implementing:
 - Frontend: Angular
 - Database: postgresql
-- Backend: µwebsocket
-- Testing: Jest/Jasmine
+- Backend: Fastify, Fastify/Websocket(ws underneath)
 - ESLint, Prettier
 
 ° - the original rules [reference](https://ru.wikipedia.org/wiki/%D0%A1%D0%B2%D0%BE%D1%8F_%D0%B8%D0%B3%D1%80%D0%B0#%D0%9E_%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B5)
